@@ -1,0 +1,109 @@
+T47F8 000:223.836   SEGGER J-Link V6.60 Log File
+T47F8 000:224.184   DLL Compiled: Dec 16 2019 15:10:44
+T47F8 000:224.203   Logging started @ 2026-03-23 01:58
+T47F8 000:224.223 JLINK_SetWarnOutHandler(...)
+T47F8 000:224.240 - 0.024ms
+T47F8 000:224.258 JLINK_OpenEx(...)
+T47F8 000:238.799   Firmware: J-Link V9 compiled Dec 13 2019 11:14:50
+T47F8 000:249.620   Hardware: V9.60
+T47F8 000:249.660   S/N: 63611453
+T47F8 000:249.681   OEM: SEGGER
+T47F8 000:249.703   Feature(s): RDI, GDB, FlashDL, FlashBP, JFlash
+T47F8 000:250.474   TELNET listener socket opened on port 19021
+T47F8 000:250.592   WEBSRV Starting webserver
+T47F8 000:250.762   WEBSRV Webserver running on local port 19080
+T47F8 000:250.792 - 26.541ms returns "O.K."
+T47F8 000:250.821 JLINK_SetErrorOutHandler(...)
+T47F8 000:250.836 - 0.024ms
+T47F8 000:250.862 JLINK_ExecCommand("ProjectFile = "D:\My Project\Air Cooler\AirCooler_(CS32F030)Pro\MDK-ARM\JLinkSettings.ini"", ...). 
+T47F8 000:252.752   Ref file found at: D:\Keil_v5.23\ARM\Segger\JLinkDevices.ref
+T47F8 000:252.968   XML referenced by ref file: C:\Program Files (x86)\SEGGER\JLink\JLinkDevices.xml
+T47F8 000:257.105   C:\Program Files (x86)\SEGGER\JLink\JLinkDevices.xml evaluated successfully.
+T47F8 000:428.384   Device "CORTEX-M3" selected.
+T47F8 000:428.706 - 177.856ms returns 0x00
+T47F8 000:428.750 JLINK_ExecCommand("Device = CS32F030C8T6", ...). 
+T47F8 000:429.064   Device "CORTEX-M3" selected.
+T47F8 000:429.355 - 0.598ms returns 0x00
+T47F8 000:429.374 JLINK_ExecCommand("DisableConnectionTimeout", ...). 
+T47F8 000:429.421 - 0.008ms returns 0x01
+T47F8 000:429.435 JLINK_GetHardwareVersion()
+T47F8 000:429.447 - 0.030ms returns 0x17700
+T47F8 000:429.494 JLINK_GetDLLVersion()  returns 66000
+T47F8 000:429.517 JLINK_GetFirmwareString(...)
+T47F8 000:429.531 - 0.020ms
+T47F8 000:429.550 JLINK_GetDLLVersion()  returns 66000
+T47F8 000:429.563 JLINK_GetCompileDateTime()
+T47F8 000:429.575 - 0.017ms
+T47F8 000:429.589 JLINK_GetFirmwareString(...)
+T47F8 000:429.600 - 0.018ms
+T47F8 000:429.615 JLINK_GetHardwareVersion()
+T47F8 000:429.626 - 0.017ms returns 0x17700
+T47F8 000:429.658 JLINK_TIF_Select(JLINKARM_TIF_SWD)
+T47F8 000:430.226 - 0.581ms returns 0x00
+T47F8 000:430.254 JLINK_SetSpeed(5000)
+T47F8 000:430.367 - 0.124ms
+T47F8 000:430.696 JLINK_SetResetType(JLINKARM_RESET_TYPE_NORMAL)
+T47F8 000:430.711 - 0.021ms returns JLINKARM_RESET_TYPE_NORMAL
+T47F8 000:430.724 JLINK_Reset()
+T47F8 000:431.609   Found SW-DP with ID 0x0BB11477
+T47F8 000:433.985   Scanning AP map to find all available APs
+T47F8 000:435.585   AP[1]: Stopped AP scan as end of AP map has been reached
+T47F8 000:435.606   AP[0]: AHB-AP (IDR: 0x04770021)
+T47F8 000:435.624   Iterating through AP map to find AHB-AP to use
+T47F8 000:438.399   AP[0]: Core found
+T47F8 000:438.419   AP[0]: AHB-AP ROM base: 0xE00FF000
+T47F8 000:439.642   CPUID register: 0x410CC200. Implementer code: 0x41 (ARM)
+T47F8 000:439.663   Found Cortex-M0 r0p0, Little endian.
+T47F8 000:540.492   Identified core does not match configuration. (Found: Cortex-M0, Configured: Cortex-M3)
+T47F8 000:541.413    -- Max. mem block: 0x00010D88
+T47F8 000:541.629    -- CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T47F8 000:542.590    -- CPU_WriteMem(4 bytes @ 0xE000EDF0)
+T47F8 000:543.205    -- CPU_ReadMem(4 bytes @ 0xE0002000)
+T47F8 000:543.834   FPUnit: 4 code (BP) slots and 0 literal slots
+T47F8 000:544.032    -- CPU_ReadMem(4 bytes @ 0xE000EDFC)
+T47F8 000:544.631    -- CPU_WriteMem(4 bytes @ 0xE000EDFC)
+T47F8 000:545.298    -- CPU_ReadMem(4 bytes @ 0xE0001000)
+T47F8 000:545.949    -- CPU_WriteMem(4 bytes @ 0xE0001000)
+T47F8 000:546.615   CoreSight components:
+T47F8 000:546.785   ROMTbl[0] @ E00FF000
+T47F8 000:546.915    -- CPU_ReadMem(16 bytes @ 0xE00FF000)
+T47F8 000:547.562    -- CPU_ReadMem(16 bytes @ 0xE000EFF0)
+T47F8 000:548.174    -- CPU_ReadMem(16 bytes @ 0xE000EFE0)
+T47F8 000:548.847   ROMTbl[0][0]: E000E000, CID: B105E00D, PID: 000BB008 SCS
+T47F8 000:549.015    -- CPU_ReadMem(16 bytes @ 0xE0001FF0)
+T47F8 000:549.592    -- CPU_ReadMem(16 bytes @ 0xE0001FE0)
+T47F8 000:550.501   ROMTbl[0][1]: E0001000, CID: B105E00D, PID: 000BB00A DWT
+T47F8 000:550.674    -- CPU_ReadMem(16 bytes @ 0xE0002FF0)
+T47F8 000:551.278    -- CPU_ReadMem(16 bytes @ 0xE0002FE0)
+T47F8 000:551.973   ROMTbl[0][2]: E0002000, CID: B105E00D, PID: 000BB00B FPB
+T47F8 000:552.310   CPU is running
+T47F8 000:552.441    -- CPU_WriteMem(4 bytes @ 0xE000EDF0)
+T47F8 000:552.996   CPU is running
+T47F8 000:553.157    -- CPU_WriteMem(4 bytes @ 0xE000EDFC)
+T47F8 000:553.688   Reset: Halt core after reset via DEMCR.VC_CORERESET.
+T47F8 000:554.446   Reset: Reset device via AIRCR.SYSRESETREQ.
+T47F8 000:554.581   CPU is running
+T47F8 000:554.684    -- CPU_WriteMem(4 bytes @ 0xE000ED0C)
+T47F8 000:607.087    -- CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T47F8 000:607.305    -- CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T47F8 000:607.526   CPU is running
+T47F8 000:607.548    -- CPU_WriteMem(4 bytes @ 0xE000EDF0)
+T47F8 000:607.769   CPU is running
+T47F8 000:607.802    -- CPU_WriteMem(4 bytes @ 0xE000EDFC)
+T47F8 000:613.797    -- CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T47F8 000:615.839    -- CPU_WriteMem(4 bytes @ 0xE0002000)
+T47F8 000:616.178    -- CPU_ReadMem(4 bytes @ 0xE000EDFC)
+T47F8 000:616.433    -- CPU_ReadMem(4 bytes @ 0xE0001000)
+T47F8 000:616.652    -- CPU_WriteMem(4 bytes @ 0xE0001000)
+T47F8 000:616.884 - 186.172ms
+T47F8 000:616.911 JLINK_GetId()
+T47F8 000:617.176 - 0.274ms   returns 0x0BB11477
+T47F8 000:620.604 JLINK_GetFirmwareString(...)
+T47F8 000:620.632 - 0.034ms
+T47F8 015:868.454 JLINK_Close()
+T47F8 015:868.837    -- CPU_ReadMem(4 bytes @ 0xE0001000)
+T47F8 015:869.179    -- CPU_WriteMem(4 bytes @ 0xE0001000)
+T47F8 015:869.455    -- CPU_WriteMem(4 bytes @ 0xE0001004)
+T47F8 015:875.638 - 7.200ms
+T47F8 015:875.660   
+T47F8 015:875.674   Closed
