@@ -29,6 +29,12 @@
 #define SWITCH_PUMP(x)      GPIOx_OUT(GPIOC,GPIO_PIN_13,x)
 #define SWITCH_FAN(x)       FAN_GPIOx_OUT(GPIOA,GPIO_PIN_11,x)
 
+#define IIC_SCL(x)          GPIOx_OUT(GPIOB,GPIO_PIN_8,x)
+#define IIC_SDA(x)          GPIOx_OUT(GPIOB,GPIO_PIN_9,x)
+#define IIC_SDA_IN          GPIOx_IN(GPIOB,GPIO_PIN_9)
+#define IIC_SDA_MODE_OUT()  gpio_mode_set(GPIOB, GPIO_PIN_9, GPIO_MODE_OUT_OD(GPIO_SPEED_MEDIUM));
+#define IIC_SDA_MODE_IN()   gpio_mode_set(GPIOB, GPIO_PIN_9, GPIO_MODE_IN_FLOAT);
+
 
 void Init_Gpio(void);
 void key_switch_fan(void);
@@ -38,6 +44,7 @@ void water_level_detec(void);
 void cover_detec(void);
 void input_detection(void);
 void led_fan(u16 grade);
-void pump_user(void);
+void pump_wait_off(void);
+void user_switch_pump(u8 onoff,u32 utime);
 
 #endif

@@ -87,14 +87,10 @@ void key_switch_fan(void)
                 if(flag_fan_sw == 0)
                 {
                     Fan_Open();
-                    flag_fan_sw = 1;
-                    printf("%d USART Printf the C library printf function. \r\n",(u8)flag_fan_sw);
                 }
                 else
                 {
                     Fan_Off();
-                    flag_fan_sw = 0;
-                    printf("%d USART Printf the C library printf function. \r\n",(u8)flag_fan_sw);
                 }
             }
         }
@@ -167,17 +163,11 @@ void key_pump_detec(void)
                 key_pump_sta = 1;
                 if(flag_pump == 0)
                 {
-                    flag_pump = 1;
-                    time_pump = 25000;
-                    LED_WATER(ON);
-                    SWITCH_PUMP(ON);
+                    user_switch_pump(ON,20000);
                 }
                 else
                 {
-                    flag_pump = 0;
-                    time_pump = 0;
-                    LED_WATER(OFF);
-                    SWITCH_PUMP(OFF);
+                    user_switch_pump(OFF,0);
                 }
             }
         }
@@ -189,13 +179,30 @@ void key_pump_detec(void)
     }
 }
 
-void pump_user(void)
+void user_switch_pump(u8 onoff,u32 utime)
+{
+    if(onoff == OFF)
+    {
+        flag_pump = 0;
+        time_pump = 0;
+        LED_WATER(OFF);
+        SWITCH_PUMP(OFF);
+    }
+    else
+    {
+        flag_pump = 1;
+        time_pump = utime;
+        LED_WATER(ON);
+        SWITCH_PUMP(ON);
+        time_run = 600000 + utime;
+    }
+}
+
+void pump_wait_off(void)
 {
     if(flag_pump == 1 && time_pump == 0)
     {
-        flag_pump = 0;
-        LED_WATER(OFF);
-        SWITCH_PUMP(OFF);
+        user_switch_pump(OFF,0);
     }
 }
 

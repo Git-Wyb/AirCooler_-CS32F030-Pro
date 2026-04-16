@@ -4,12 +4,13 @@
 //static u8 fac_us=0;						 
 //static u16 fac_ms=0;
 
-u16 fan_pwm_set = D_PWM_LOW;
-u8 fan_speed_set = 0;
+u16 fan_pwm_set = D_PWM_MAX;
+u8 fan_speed_set = 2;
 BaseFlagStu Un_Flag0 = {0};
 BaseFlagStu Un_Flag1 = {0};
 u16 time_ms = 0;
-u16 time_pump = 0;
+u32 time_pump = 0;
+u32 time_run = 0;
 
 void Init_system_clock(void)
 {
@@ -59,6 +60,15 @@ void Init_FWDT(void) //∂¿¡¢ø¥√≈π∑
 void FWDT_Clear(void)
 {
     __FWDT_RELOAD_COUNTER();
+}
+
+void waiting_ms(u16 ms)
+{
+    time_ms = ms;
+    while(time_ms)
+    {
+        FWDT_Clear();
+    }
 }
 
 #if 0

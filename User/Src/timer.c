@@ -45,7 +45,9 @@ void TIM6_IRQHandler(void)
         
         if(time_ms) time_ms--;
         if(time_pump) time_pump--;
+        if(time_run)  time_run--;
         input_detection();
+        pump_wait_off();
     }
 }
 
@@ -88,6 +90,7 @@ void Fan_Open(void)
     __TIM_ENABLE(TIM1);                 // TIM1 counter enable
     __TIM_FUNC_ENABLE(TIM1, CH_OUTPUT); // TIM1 PWM Output Enable.
     led_fan(fan_pwm_set);
+    flag_fan_sw = 1;
 }
 
 void Fan_Off(void)
@@ -99,6 +102,7 @@ void Fan_Off(void)
     LED_FAN_LOW(OFF);
     LED_FAN_MID(OFF);
     LED_FAN_MAX(OFF);
+    flag_fan_sw = 0;
 }
 
 void Fan_Pwm(u16 pwm)

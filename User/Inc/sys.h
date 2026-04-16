@@ -49,7 +49,8 @@ extern BaseFlagStu Un_Flag1;
 extern u16 fan_pwm_set;
 extern u8 fan_speed_set;
 extern u16 time_ms;
-extern u16 time_pump;
+extern u32 time_pump;
+extern u32 time_run;
 
 //void Init_IWDG(void);
 //void R_WDT_Restart(void);
@@ -60,5 +61,6 @@ extern u16 time_pump;
 void Init_FWDT(void);
 void FWDT_Clear(void);
 void Init_system_clock(void);
+void waiting_ms(u16 ms);
 
 #endif
