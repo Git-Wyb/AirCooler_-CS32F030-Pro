@@ -9,7 +9,7 @@ extern uint32_t SystemCoreClock;
 static volatile uint32_t timing_delay;
 
 void delay(uint32_t value);
-
+void Send_Logo(void);
 //static void set_sys_clock(void);
 
 /**
@@ -28,23 +28,8 @@ int main(void)
     Init_system_clock();
     Init_Gpio();
     Init_Timer6();
-    //Init_IIC();
-    //Init_Uart1();
-    //Init_Timer3();
-    init_iic_m();
-    //waiting_ms(2000);
-    //Fan_Open();
-    //waiting_ms(2000);
-    //user_switch_pump(ON,30000);
-    //ret = iic_master_read(0x09,&readreg,1); //read state
-    readreg = Read_CH224A(0x09);
-    waiting_ms(2);
-    ret = 0xff;
-    Write_CH224A(0x0A,3);//15v
-    waiting_ms(200);
-    readreg = 0x00;
-    readreg = Read_CH224A(0x60);
-    ret = CH224A_Set_Voltage(20); //write Voltage
+    Init_Uart1();
+    Init_Timer3();
     
     while (1)
     {
@@ -53,9 +38,18 @@ int main(void)
         {
             //user_switch_pump(ON,20000);
         }
+        Send_Logo();
     }
 }
 
+void Send_Logo(void)
+{
+    if(flag_fan_sw && time_ms == 0)
+    {
+        time_ms = 1000;
+        printf("FAN RPM = %d\r\n",fan_rpm);
+    }
+}
 
 /**
  * @fn void Delay(volatile uint32_t value)

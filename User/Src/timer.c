@@ -3,13 +3,13 @@
 #include "gpio.h"
 #include "uart.h"
 
-u32 read_value1 = 0;
-u32 read_value2 = 0;
-u32 capture = 0;
-u32 c_freq1 = 0;
-u32 c_freq2 = 0;
+u16 read_value1 = 0;
+u16 read_value2 = 0;
+u16 capture = 0;
+u16 t_cycle1 = 0;
+u16 t_cycle2 = 0;
 u8 capture_flag = 0;
-double C_T = 0;
+
 u32 fan_rpm = 0;
 
 void Init_Timer6(void)
@@ -91,6 +91,14 @@ void Fan_Open(void)
     __TIM_FUNC_ENABLE(TIM1, CH_OUTPUT); // TIM1 PWM Output Enable.
     led_fan(fan_pwm_set);
     flag_fan_sw = 1;
+    
+    read_value1 = 0;
+    read_value2 = 0;
+    capture = 0;
+    t_cycle1 = 0;
+    t_cycle2 = 0;
+    capture_flag = 0;
+    fan_rpm = 0;
 }
 
 void Fan_Off(void)
@@ -103,6 +111,14 @@ void Fan_Off(void)
     LED_FAN_MID(OFF);
     LED_FAN_MAX(OFF);
     flag_fan_sw = 0;
+    
+    read_value1 = 0;
+    read_value2 = 0;
+    capture = 0;
+    t_cycle1 = 0;
+    t_cycle1 = 0;
+    capture_flag = 0;
+    fan_rpm = 0;
 }
 
 void Fan_Pwm(u16 pwm)
@@ -110,29 +126,32 @@ void Fan_Pwm(u16 pwm)
     TIM1->CHxCCVAL[TIM_CHANNEL_4] = pwm;
 }
 
-//fan FG: PB4 -> TIM3_CH1
+//fan FG: PB4 -> TIM3_CH1 //PB4 -> Reusability Function 1 TIM3_CH1
 void Init_Timer3(void)
 {
     tim_chic_t timer_capture_struct;
     nvic_config_t nvic_config_struct;
 
-    __RCU_APB1_CLK_ENABLE(RCU_APB1_PERI_TIM3); // TIM1 clock enable
+    __RCU_AHB_CLK_ENABLE(RCU_AHB_PERI_GPIOB);  // GPIOB clock enable
+    __RCU_APB1_CLK_ENABLE(RCU_APB1_PERI_TIM3); // TIM3 clock enable
 
-    // TIM1_CH2 (PA9) configuration
-    gpio_mf_config(GPIOB, GPIO_PIN_4, GPIO_MF_SEL2); // Connect TIM pins to MF_SEL2
+    gpio_mf_config(GPIOB, GPIO_PIN_4, GPIO_MF_SEL1); // Connect TIM pins to MF_SEL1
     gpio_mode_set(GPIOB, GPIO_PIN_4, GPIO_MODE_MF_PP(GPIO_SPEED_HIGH));
-
+    
+    //f = fCK_PSC / (PSC[15:0] + 1) = 16MHz / (15+1) = 1MHz.
+    tim_prescaler_set(TIM3, 15, TIM_PDIV_MODE_IMMEDIATE); // Prescaler configuration,
+    
     timer_capture_struct.channel = TIM_CHANNEL_1;
     timer_capture_struct.polarity = TIM_CHxIC_POLARITY_RISING;
     timer_capture_struct.select = TIM_CHIC_SEL_DIRECT_INTR;
     timer_capture_struct.predivider = TIM_CHIC_PREDIVIDE_DIV1;
-    timer_capture_struct.filter = 0x0;
+    timer_capture_struct.filter = 0xf;
 
     tim_chic_init(TIM3, &timer_capture_struct);
     __TIM_ENABLE(TIM3);                      // TIM enable counter
-    __TIM_INTR_ENABLE(TIM3, TIM_INTR_CH1CC); // Enable the CC2 Interrupt Request
+    __TIM_INTR_ENABLE(TIM3, TIM_INTR_CH1CC); // Enable the CC1 Interrupt Request
 
-    // Enable the TIM1 Interrupt
+    // Enable the TIM3 Interrupt
     nvic_config_struct.IRQn = IRQn_TIM3;
     nvic_config_struct.priority = 0;
     nvic_config_struct.enable_flag = ENABLE;
@@ -148,12 +167,13 @@ void TIM3_IRQHandler(void)
         
         if(capture_flag == 0)
         {
-            read_value1 = __TIM_CC_VALUE_GET(TIM3, TIM_CHANNEL_4); //Get the Input capture value
+            read_value1 = __TIM_CC_VALUE_GET(TIM3, TIM_CHANNEL_1); //Get the Input capture value
             capture_flag = 1;
         }
         else if(capture_flag == 1)
-        {   
-            read_value2 = __TIM_CC_VALUE_GET(TIM3, TIM_CHANNEL_4);  // Get the Input capture value
+        { 
+            capture_flag = 0;            
+            read_value2 = __TIM_CC_VALUE_GET(TIM3, TIM_CHANNEL_1);  // Get the Input capture value
       
             //capture computation 
             if (read_value2 > read_value1) 
@@ -169,15 +189,15 @@ void TIM3_IRQHandler(void)
                 capture = 0;
             }
             c_cnt++;
-            if(c_cnt == 1)      c_freq1 = (uint32_t)16000000 / capture; //Frequency computation
+            if(c_cnt == 1)      t_cycle1 = capture * COEFFICIENT / 1000000;//To facilitate the calculation of the magnification = COEFFICIENT
             else if(c_cnt == 2) 
             {
                 c_cnt = 0;
-                c_freq2 = (uint32_t)16000000 / capture;
-                C_T = 1/c_freq1 + 1/c_freq2;
-                fan_rpm = 60 * (1 / C_T);
+                t_cycle2 = capture * COEFFICIENT / 1000000;
+                
+                //RPM = 60 * (1 / T); T = Two cycles;
+                fan_rpm = 60 * COEFFICIENT / (t_cycle1 + t_cycle2);
             }
-            capture_flag = 0;
         }
         
     }

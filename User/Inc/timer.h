@@ -8,9 +8,9 @@
 #define D_PWM_MID 160  //75%
 #define D_PWM_LOW 320  //50%
 
+#define COEFFICIENT 10000
+
 extern u32 fan_rpm;
-extern u32 c_freq1;
-extern u32 c_freq2;
 
 void Init_Timer6(void);
 void Fan_Open(void);

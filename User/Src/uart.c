@@ -37,3 +37,4 @@ int fputc(int ch, FILE *f)
     while(__USART_FLAG_STATUS_GET(USART1, TXE) == RESET);
     return ch;
 }
+
