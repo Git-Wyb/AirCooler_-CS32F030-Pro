@@ -4,6 +4,7 @@
 #include "gpio.h"
 #include "uart.h"
 #include "iic.h"
+#include "adc.h"
 
 extern uint32_t SystemCoreClock;
 static volatile uint32_t timing_delay;
@@ -22,6 +23,7 @@ void Send_Logo(void);
 u8 readreg = 0;
 u8 setvol = 0;
 u8 ret = 0xff;
+
 int main(void)
 {
     //Init_FWDT();
@@ -30,6 +32,7 @@ int main(void)
     Init_Timer6();
     Init_Uart1();
     Init_Timer3();
+    Init_ADC1();
     
     while (1)
     {
@@ -37,6 +40,7 @@ int main(void)
         if(time_run == 0) //抽水结束，吹10分钟之后再次抽水
         {
             //user_switch_pump(ON,20000);
+            auto_test();
         }
         Send_Logo();
     }
@@ -44,10 +48,12 @@ int main(void)
 
 void Send_Logo(void)
 {
-    if(flag_fan_sw && time_ms == 0)
+    //if(flag_fan_sw && time_ms == 0)
+    if(time_ms == 0)
     {
-        time_ms = 1000;
-        printf("FAN RPM = %d\r\n",fan_rpm);
+        time_ms = 2000;
+        printf("Count = %ld, Cycle_Index = %ld\r\n",run_cnt,run_cnt/2);
+        //printf("FAN RPM = %d\r\n",fan_rpm);
     }
 }
 

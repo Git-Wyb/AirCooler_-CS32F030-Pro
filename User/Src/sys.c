@@ -8,9 +8,15 @@ u16 fan_pwm_set = D_PWM_MAX;
 u8 fan_speed_set = 2;
 BaseFlagStu Un_Flag0 = {0};
 BaseFlagStu Un_Flag1 = {0};
+BaseValueStu Adc_Val = {0};
+BaseValueStu CalVal = {0};
+
 u16 time_ms = 0;
 u32 time_pump = 0;
 u32 time_run = 0;
+u32 run_cnt = 0;
+u16 Adc_Value_Buff[5][7] = {0};
+
 
 void Init_system_clock(void)
 {

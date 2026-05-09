@@ -16,6 +16,14 @@ typedef signed int s32;
 typedef unsigned int u32;
 typedef float f32;
 
+typedef struct{
+    u16 Water_Pump;
+    u16 Sol_Value;
+    u16 Power_IN;
+    u16 Power_24V;
+    u16 Refint_IN;
+}BaseValueStu;
+
 typedef union{
     u8 Flag;
     struct
@@ -38,19 +46,23 @@ extern BaseFlagStu Un_Flag1;
 #define key_fan_sta             Un_Flag0.Bit.b1
 #define key_pump_sta            Un_Flag0.Bit.b2
 
-
 #define flag_fan_sw             Un_Flag1.Bit.b0
 #define flag_fan                Un_Flag1.Bit.b1
 #define flag_pump               Un_Flag1.Bit.b2 //水泵
 #define flag_flow               Un_Flag1.Bit.b3 //水流
 #define flag_level              Un_Flag1.Bit.b4 //水位
 #define flag_cover              Un_Flag1.Bit.b5 //盖板
+#define flag_adc_ok             Un_Flag1.Bit.b6 //盖板
 
 extern u16 fan_pwm_set;
 extern u8 fan_speed_set;
 extern u16 time_ms;
 extern u32 time_pump;
 extern u32 time_run;
+extern u32 run_cnt;
+extern u16 Adc_Value_Buff[5][7];
+extern BaseValueStu Adc_Val;
+extern BaseValueStu CalVal;
 
 //void Init_IWDG(void);
 //void R_WDT_Restart(void);

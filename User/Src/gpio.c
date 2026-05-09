@@ -16,6 +16,7 @@ void Init_Gpio(void)
     gpio_mode_set(GPIOF, GPIO_PIN_7, GPIO_MODE_IN_PU); //test pin
     
     gpio_mode_set(GPIOA, GPIO_PIN_11, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
+    gpio_mode_set(GPIOA, GPIO_PIN_12, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     gpio_mode_set(GPIOB, GPIO_PIN_10, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     gpio_mode_set(GPIOB, GPIO_PIN_11, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     gpio_mode_set(GPIOB, GPIO_PIN_12, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
@@ -31,7 +32,7 @@ void Init_Gpio(void)
     LED_FAN_LOW(OFF);
     LED_ABNORMAL(OFF);
     SWITCH_PUMP(OFF);
-    SWITCH_FAN(OFF);
+    SWITCH_FAN(ON);
     
     LED_POWER(ON);
 }
@@ -86,11 +87,15 @@ void key_switch_fan(void)
                 key_power_sta = 1;
                 if(flag_fan_sw == 0)
                 {
-                    Fan_Open();
+                    flag_fan_sw = 1;
+                    user_switch_solenoid(ON,0);
+                    //Fan_Open();
                 }
                 else
                 {
-                    Fan_Off();
+                    flag_fan_sw = 0;
+                    user_switch_solenoid(OFF,0);
+                    //Fan_Off();
                 }
             }
         }
@@ -115,6 +120,7 @@ void key_fan_detec(void)
             {
                 key_fan_sta = 1;
                 fan_speed_set++;
+                
                 if(fan_speed_set > 2) fan_speed_set = 0;
                 switch(fan_speed_set)
                 {
@@ -139,6 +145,7 @@ void key_fan_detec(void)
                         led_fan(fan_pwm_set);
                         break;
                 }
+                
             }
         }
     }
@@ -198,11 +205,26 @@ void user_switch_pump(u8 onoff,u32 utime)
     }
 }
 
+void user_switch_solenoid(u8 onoff,u32 utime)
+{
+    if(onoff == OFF)
+    {
+        SWITCH_FAN(ON);
+        LED_FAN_MAX(OFF);
+    }
+    else
+    {
+        SWITCH_FAN(OFF);
+        LED_FAN_MAX(ON);
+    }
+}
+
 void pump_wait_off(void)
 {
     if(flag_pump == 1 && time_pump == 0)
     {
         user_switch_pump(OFF,0);
+        user_switch_solenoid(OFF,0);
     }
 }
 
@@ -274,3 +296,31 @@ void cover_detec(void)
     }
 }
 
+u8 step = 0;
+void auto_test(void)
+{
+    switch(step)
+    {
+        case 0:
+            user_switch_solenoid(OFF,0);
+            user_switch_pump(ON,20000);
+            time_run = 30000;
+            step = 1;
+            run_cnt++;
+            break;
+        
+        case 1:
+            user_switch_solenoid(ON,0);
+            time_run = 1000;
+            step = 2;
+            break;
+        
+        case 2:
+            user_switch_pump(ON,20000);
+            time_run = 29000;
+            step = 0;
+            run_cnt++;
+            break;
+    }
+
+}

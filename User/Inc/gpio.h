@@ -28,6 +28,7 @@
 #define LED_POWER(x)        GPIOx_OUT(GPIOB,GPIO_PIN_10,x)    
 #define SWITCH_PUMP(x)      GPIOx_OUT(GPIOC,GPIO_PIN_13,x)
 #define SWITCH_FAN(x)       FAN_GPIOx_OUT(GPIOA,GPIO_PIN_11,x)
+#define SWITCH_SOLEN(x)     GPIOx_OUT(GPIOA,GPIO_PIN_12,x)
 
 #define IIC_SCL(x)          GPIOx_OUT(GPIOB,GPIO_PIN_8,x)
 #define IIC_SDA(x)          GPIOx_OUT(GPIOB,GPIO_PIN_9,x)
@@ -46,5 +47,7 @@ void input_detection(void);
 void led_fan(u16 grade);
 void pump_wait_off(void);
 void user_switch_pump(u8 onoff,u32 utime);
+void user_switch_solenoid(u8 onoff,u32 utime);
+void auto_test(void);
 
 #endif
