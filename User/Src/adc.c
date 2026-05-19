@@ -4,7 +4,6 @@
 static volatile uint16_t adc_conv[6];
 
 uint16_t VREFINT_CAL = 0;
-uint32_t Vref_Cal = 0;
 // 定义校准值存储地址
 #define VREFINT_CAL_ADDR  ((uint16_t *)(0x1FFFF7BA))
 uint16_t Read_VREFINT_CAL(void)
@@ -60,6 +59,8 @@ void adc_config(void)
 
     adc_calibration_value_get(ADC1);                //ADC Calibration
     adc_dma_mode_set(ADC1, ADC_DMA_MODE_CIRCULAR);  // ADC DMA request in circular mode.
+    
+    __DMA_ENABLE(DMA1_CHANNEL1);        //DMA1 Channel1 enable
 
     // Enable ADC_DMA 
     __ADC_DMA_ENABLE(ADC1); 
@@ -72,7 +73,7 @@ void adc_config(void)
 static void adc_dma_config(void)
 {
     dma_config_t  dma_configStruct;
-    nvic_config_t nvic_config_struct;
+//    nvic_config_t nvic_config_struct;
     //Enable DMA1 clock  
     __RCU_AHB_CLK_ENABLE(RCU_AHB_PERI_DMA);
     
@@ -92,12 +93,10 @@ static void adc_dma_config(void)
     dma_init(DMA1_CHANNEL1, &dma_configStruct);
     
      /* Enable and set DMA1_CHANNEL1 Interrupt */
-    nvic_config_struct.IRQn = IRQn_DMA1_CHANNEL1;
-    nvic_config_struct.priority = 1;
-    nvic_config_struct.enable_flag = ENABLE;
-    nvic_init(&nvic_config_struct);
-    
-    __DMA_ENABLE(DMA1_CHANNEL1);        //DMA1 Channel1 enable
+    //nvic_config_struct.IRQn = IRQn_DMA1_CHANNEL1;
+    //nvic_config_struct.priority = 1;
+    //nvic_config_struct.enable_flag = ENABLE;
+    //nvic_init(&nvic_config_struct);
 }
 
 u8 vy = 0;
@@ -120,52 +119,34 @@ void DMA1_Channel1_IRQHandler(void)
     }
 }
 
-void get_adc_value(void)
+void adc_dma_value(void)
 {
-    if(flag_adc_ok)
+    //while((__DMA_FLAG_STATUS_GET(CMP1)) == RESET );     // wait DMA1 CMP1 flag.
+    //__DMA_FLAG_CLEAR(DMA1_FLAG_CMP1);                   // Clear DMA CMP1 flag.
+    if(__DMA_FLAG_STATUS_GET(CMP1) == SET)
     {
-        flag_adc_ok = 0;
-        Adc_Val.Water_Pump = bubble_sort_average_value(&Adc_Value_Buff[WaterPump_Index][0],7);
-        Adc_Val.Sol_Value  = bubble_sort_average_value(&Adc_Value_Buff[SolValue_Index][0],7);
-        Adc_Val.Power_IN   = bubble_sort_average_value(&Adc_Value_Buff[PowerIN_Index][0],7);
-        Adc_Val.Power_24V  = bubble_sort_average_value(&Adc_Value_Buff[Power24V_Index][0],7);
-        Adc_Val.Refint_IN  = bubble_sort_average_value(&Adc_Value_Buff[RefintIN_Index][0],7);
+        __DMA_FLAG_CLEAR(DMA1_FLAG_CMP1);
         
-        Vref_Cal = (3300 * VREFINT_CAL) / (Adc_Val.Refint_IN); //3300mV
-        CalVal.Water_Pump = (Vref_Cal * Adc_Val.Water_Pump) / 4095;//mV
-        CalVal.Sol_Value  = (Vref_Cal * Adc_Val.Sol_Value) / 4095;//mV
-        CalVal.Power_IN   = (Vref_Cal * Adc_Val.Power_IN) / 4095;//mV
-        CalVal.Power_24V  = (Vref_Cal * Adc_Val.Power_24V) / 4095;//mV
+        for(vx = 0; vx < 5; vx++)
+        {
+            Adc_Value_Buff[vx][vy] = adc_conv[vx];
+        }
+        vy++;
+        if(vy >= 7)
+        {
+            vy = 0;
+            flag_adc_ok = 1;
+        }
     }
 }
 
-u16 bubble_sort_average_value(u16 *buff,u16 len)
-{
-    u8 i=0,j=0;
-    u16 temp = 0;
-    if(len < 3) return 0;
-    
-    for (i = 0; i < len; i++)
-	{
-		for (j = 0; j < len - 1; j++) //sort from smallest to biggest
-		{
-			if (buff[j] > buff[j + 1])
-			{
-				temp = buff[j];
-				buff[j] = buff[j + 1];
-				buff[j + 1] = temp;
-			}
-		}
-	}
-    temp = 0;
-    for(i = 1; i <= len-2; i++)
-    {
-        temp += buff[i];
-    }
-    
-    return (temp / (len-2));
-}
-
+/* ADC 
+Water_Pump:     PA6 -> CH6 //水泵检测
+Solenoid_Value: PA7 -> CH7 //电磁阀检测
+Power_IN:       PB0 -> CH8 //输入电源检测
+Power_24V:      PB1 -> CH9 //DC24检测
+Refint_IN:      CH17 //内部参考电压
+*/
 void Init_Adc(void)
 {
     adc_config_t   adc_config_struct;
@@ -174,7 +155,7 @@ void Init_Adc(void)
     __RCU_APB2_CLK_ENABLE(RCU_APB2_PERI_ADC);   
     
     //Configure ADC CH6 GPIO as analog input.
-    gpio_mode_set(GPIOA, GPIO_PIN_6, GPIO_MODE_ANALOG);
+    gpio_mode_set(GPIOB, GPIO_PIN_1, GPIO_MODE_ANALOG);
     
     adc_def_init(ADC1);   
     adc_config_struct_init(&adc_config_struct);  
@@ -188,7 +169,10 @@ void Init_Adc(void)
     adc_init(ADC1, &adc_config_struct); 
 
     // Set the ADC1 CH6 with 239.5 Cycles
-    adc_channel_config(ADC1, ADC_CONV_CHANNEL_6 , ADC_SAMPLE_TIMES_239_5); 
+    adc_channel_config(ADC1, ADC_CONV_CHANNEL_17 , ADC_SAMPLE_TIMES_239_5); 
+    
+    __ADC_FUNC_ENABLE(ADC1,VREFINT); //启用 VREFINT 通道 1000
+    
     adc_calibration_value_get(ADC1);    // ADC Calibration.  
     __ADC_ENABLE(ADC1);                     // Enable the ADC.    
     

@@ -16,6 +16,10 @@ u32 time_pump = 0;
 u32 time_run = 0;
 u32 run_cnt = 0;
 u16 Adc_Value_Buff[5][7] = {0};
+uint32_t Vref_Cal = 0;
+u8 water_pump_state = 0;
+u8 Solenoid_state = 0;
+u8 PowerIN_state = 0;
 
 
 void Init_system_clock(void)
@@ -54,9 +58,13 @@ void Init_system_clock(void)
 
 void Init_FWDT(void) //独立看门狗
 {
+    __RCU_FUNC_ENABLE(LRC_CLK);
+    while (__RCU_FLAG_STATUS_GET(LRC_STAB) == RESET)
+        ; // Wait till LRC stabilization
+    
     __FWDT_WRITE_ACCESS_ENABLE(); // Enable write access
     __FWDT_PRESCALER_SET(FWDT_PRESCALER_32);
-    __FWDT_RELOAD_VALUE_SET(313); //约250ms
+    __FWDT_RELOAD_VALUE_SET(312); //约250ms
     while ((__FWDT_FLAG_STATUS_GET(DRF) & __FWDT_FLAG_STATUS_GET(UVRF)) != RESET)
         ;
     __FWDT_RELOAD_COUNTER();

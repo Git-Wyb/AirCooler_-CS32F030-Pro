@@ -45,6 +45,8 @@ extern BaseFlagStu Un_Flag1;
 #define key_power_sta           Un_Flag0.Bit.b0
 #define key_fan_sta             Un_Flag0.Bit.b1
 #define key_pump_sta            Un_Flag0.Bit.b2
+#define flag_rx_head            Un_Flag0.Bit.b3
+#define flag_rx_done            Un_Flag0.Bit.b4
 
 #define flag_fan_sw             Un_Flag1.Bit.b0
 #define flag_fan                Un_Flag1.Bit.b1
@@ -53,6 +55,7 @@ extern BaseFlagStu Un_Flag1;
 #define flag_level              Un_Flag1.Bit.b4 //Ë®Î»
 #define flag_cover              Un_Flag1.Bit.b5 //¸Ç°å
 #define flag_adc_ok             Un_Flag1.Bit.b6 //¸Ç°å
+#define flag_power              Un_Flag1.Bit.b7 //power
 
 extern u16 fan_pwm_set;
 extern u8 fan_speed_set;
@@ -63,6 +66,10 @@ extern u32 run_cnt;
 extern u16 Adc_Value_Buff[5][7];
 extern BaseValueStu Adc_Val;
 extern BaseValueStu CalVal;
+extern uint32_t Vref_Cal;
+extern u8 water_pump_state;
+extern u8 Solenoid_state;
+extern u8 PowerIN_state;
 
 //void Init_IWDG(void);
 //void R_WDT_Restart(void);

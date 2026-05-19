@@ -8,6 +8,7 @@ void Init_Gpio(void)
     __RCU_AHB_CLK_ENABLE(RCU_AHB_PERI_GPIOB); // Enable the GPIOB Clock
     __RCU_AHB_CLK_ENABLE(RCU_AHB_PERI_GPIOC); // Enable the GPIOC Clock
     
+    //INPUT
     gpio_mode_set(GPIOA, GPIO_PIN_0, GPIO_MODE_IN_PU);
     gpio_mode_set(GPIOA, GPIO_PIN_1, GPIO_MODE_IN_PU);
     gpio_mode_set(GPIOA, GPIO_PIN_2, GPIO_MODE_IN_PU);
@@ -15,16 +16,27 @@ void Init_Gpio(void)
     gpio_mode_set(GPIOA, GPIO_PIN_5, GPIO_MODE_IN_PU);
     gpio_mode_set(GPIOF, GPIO_PIN_7, GPIO_MODE_IN_PU); //test pin
     
+    //OUTPUT
     gpio_mode_set(GPIOA, GPIO_PIN_11, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     gpio_mode_set(GPIOA, GPIO_PIN_12, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
+    gpio_mode_set(GPIOA, GPIO_PIN_8, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
+    
     gpio_mode_set(GPIOB, GPIO_PIN_10, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     gpio_mode_set(GPIOB, GPIO_PIN_11, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     gpio_mode_set(GPIOB, GPIO_PIN_12, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     gpio_mode_set(GPIOB, GPIO_PIN_13, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     gpio_mode_set(GPIOB, GPIO_PIN_14, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     gpio_mode_set(GPIOB, GPIO_PIN_15, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
+    gpio_mode_set(GPIOB, GPIO_PIN_6, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
+    gpio_mode_set(GPIOB, GPIO_PIN_7, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     
     gpio_mode_set(GPIOC, GPIO_PIN_13, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
+    
+    POWER_ON(ON);
+    key_power_sta = 1;
+    flag_power = 1;
+    CH224A_CFG2(0);
+    CH224A_CFG3(0); //20V
     
     LED_WATER(OFF);
     LED_FAN_MAX(OFF);
@@ -32,7 +44,7 @@ void Init_Gpio(void)
     LED_FAN_LOW(OFF);
     LED_ABNORMAL(OFF);
     SWITCH_PUMP(OFF);
-    SWITCH_FAN(ON);
+    SWITCH_FAN(OFF);
     
     LED_POWER(ON);
 }
@@ -66,15 +78,15 @@ void led_fan(u16 grade)
 
 void input_detection(void)
 {
-    key_switch_fan();
-    key_fan_detec();
-    key_pump_detec();
-    water_level_detec();
-    cover_detec();
+    key_switch_power(); //电源按键
+    key_fan_detec();    //风量选择
+    key_pump_detec();   //水泵开关
+    water_level_detec();//浮球水位检测 
+    cover_detec();      //改版检测
 }
 
 u8 key_power_ms = 0;
-void key_switch_fan(void)
+void key_switch_power(void)
 {
     if(key_power_sta == 0 && KEY_POWER == 0)
     {
@@ -85,17 +97,17 @@ void key_switch_fan(void)
             if(KEY_POWER == 0)
             {
                 key_power_sta = 1;
-                if(flag_fan_sw == 0)
+                if(flag_power == 1)
                 {
-                    flag_fan_sw = 1;
-                    user_switch_solenoid(ON,0);
-                    //Fan_Open();
+                    flag_power = 0;
+                    POWER_ON(OFF);
+                    LED_POWER(OFF)
                 }
                 else
                 {
-                    flag_fan_sw = 0;
-                    user_switch_solenoid(OFF,0);
-                    //Fan_Off();
+                    flag_power = 1;
+                    POWER_ON(ON);
+                    LED_POWER(ON)
                 }
             }
         }
@@ -194,6 +206,8 @@ void user_switch_pump(u8 onoff,u32 utime)
         time_pump = 0;
         LED_WATER(OFF);
         SWITCH_PUMP(OFF);
+        
+        SWITCH_SOLEN(OFF);
     }
     else
     {
@@ -202,6 +216,8 @@ void user_switch_pump(u8 onoff,u32 utime)
         LED_WATER(ON);
         SWITCH_PUMP(ON);
         time_run = 600000 + utime;
+        
+        SWITCH_SOLEN(ON);
     }
 }
 

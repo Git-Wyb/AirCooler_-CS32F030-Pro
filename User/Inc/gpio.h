@@ -25,8 +25,11 @@
 #define LED_FAN_MID(x)      GPIOx_OUT(GPIOB,GPIO_PIN_13,x)
 #define LED_FAN_LOW(x)      GPIOx_OUT(GPIOB,GPIO_PIN_12,x)
 #define LED_ABNORMAL(x)     GPIOx_OUT(GPIOB,GPIO_PIN_11,x)
-#define LED_POWER(x)        GPIOx_OUT(GPIOB,GPIO_PIN_10,x)    
-#define SWITCH_PUMP(x)      GPIOx_OUT(GPIOC,GPIO_PIN_13,x)
+#define LED_POWER(x)        GPIOx_OUT(GPIOB,GPIO_PIN_10,x) 
+#define CH224A_CFG2(x)      GPIOx_OUT(GPIOB,GPIO_PIN_7,x)
+#define CH224A_CFG3(x)      GPIOx_OUT(GPIOB,GPIO_PIN_6,x)
+#define POWER_ON(x)         GPIOx_OUT(GPIOC,GPIO_PIN_13,x)
+#define SWITCH_PUMP(x)      GPIOx_OUT(GPIOA,GPIO_PIN_8,x)
 #define SWITCH_FAN(x)       FAN_GPIOx_OUT(GPIOA,GPIO_PIN_11,x)
 #define SWITCH_SOLEN(x)     GPIOx_OUT(GPIOA,GPIO_PIN_12,x)
 
@@ -38,7 +41,7 @@
 
 
 void Init_Gpio(void);
-void key_switch_fan(void);
+void key_switch_power(void);
 void key_fan_detec(void);
 void key_pump_detec(void);
 void water_level_detec(void);

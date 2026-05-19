@@ -47,7 +47,7 @@ void TIM6_IRQHandler(void)
         if(time_pump) time_pump--;
         if(time_run)  time_run--;
         input_detection();
-        pump_wait_off();
+        //pump_wait_off();
     }
 }
 
