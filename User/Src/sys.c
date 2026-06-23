@@ -1,10 +1,10 @@
 #include "sys.h"
 #include "timer.h"
 
-//static u8 fac_us=0;						 
-//static u16 fac_ms=0;
+#define DATA_FLASH_BASE_ADDR 0x1FFFF840  //total 192Bytes space
+#define DATA_FLASH_SIZE      192
 
-u16 fan_pwm_set = D_PWM_MAX;
+u16 fan_pwm_set = D_PWM_LOW;//D_PWM_MAX
 u8 fan_speed_set = 2;
 BaseFlagStu Un_Flag0 = {0};
 BaseFlagStu Un_Flag1 = {0};
@@ -15,12 +15,13 @@ u16 time_ms = 0;
 u32 time_pump = 0;
 u32 time_run = 0;
 u32 run_cnt = 0;
+u16 ms_cnt = 0;
 u16 Adc_Value_Buff[5][7] = {0};
 uint32_t Vref_Cal = 0;
 u8 water_pump_state = 0;
 u8 Solenoid_state = 0;
 u8 PowerIN_state = 0;
-
+u8 power_input = 0;
 
 void Init_system_clock(void)
 {
@@ -54,6 +55,43 @@ void Init_system_clock(void)
     }
     
     rcu_hrc_calibration_adjust(0x12);
+}
+
+//Support for word or half-word programming
+//addroffset = 0 ~ 95.
+u16 DataFlash_Write_half_word(u16 addroffset,u16 data)
+{
+    if(addroffset > (DATA_FLASH_SIZE/2 - 1)) return 1;
+    
+    flash_unlock();
+    
+    __FLASH_FLAG_CLEAR(FLASH_FLAG_ENDF | FLASH_FLAG_PGERR | FLASH_FLAG_WPERR);
+    if(flash_page_erase(DATA_FLASH_BASE_ADDR) != FLASH_STATUS_COMPLETE)
+    {
+        flash_lock();
+        return 2;//while(1);//err
+    }
+    if(flash_half_word_program(DATA_FLASH_BASE_ADDR + addroffset*2, data) == FLASH_STATUS_COMPLETE)
+    {
+        ;
+    }
+    else
+    {
+        flash_lock();
+        return 3;
+    }
+    
+    flash_lock();
+    
+    return 0;
+}
+
+//addroffset = 0 ~ 95.
+u16 DataFlash_Read_half_word(u16 addroffset)
+{
+    if(addroffset > (DATA_FLASH_SIZE/2 - 1)) return 0;
+    
+    return *(__IO uint16_t *)(DATA_FLASH_BASE_ADDR + addroffset*2);
 }
 
 void Init_FWDT(void) //∂¿¡¢ø¥√≈π∑

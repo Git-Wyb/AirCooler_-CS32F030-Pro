@@ -22,7 +22,7 @@ void get_adc_value_deal(void)
         CalVal.Power_IN   = (Vref_Cal * Adc_Val.Power_IN) / 4095;  //1925mV
         CalVal.Power_24V  = (Vref_Cal * Adc_Val.Power_24V) / 4095; //2155mv
         
-        if(CalVal.Power_IN >= POWER_IN_TYPE-50 && flag_fan_sw == 0 && CalVal.Power_24V >= Power_24V_TYPE-50)
+        if(flag_fan_sw == 0 && CalVal.Power_24V >= Power_24V_TYPE-50)
         {
             flag_fan_sw = 1;
             Fan_Open();

@@ -34,7 +34,7 @@ int main(void)
     Init_Uart1();
     Init_Timer3();
     Init_ADC1();
-    Fan_Open();
+    //Fan_Open();
     while (1)
     {
         FWDT_Clear();
@@ -56,7 +56,8 @@ void Send_Logo(void)
         flag_rx_done = 0;
         time_ms = 2000;
         //printf("Count = %ld, Cycle_Index = %ld\r\n",run_cnt,run_cnt/2);
-        printf("\r\nFan RPM = %d\r\n",fan_rpm);
+        printf("\r\nSoft Version 1.00\r\n");
+        printf("Fan RPM = %d\r\n",fan_rpm);
         printf("ADC Water Pump     = %d(mV)\r\n",CalVal.Water_Pump);
         printf("ADC Solenoid valve = %d(mV)\r\n",CalVal.Sol_Value);
         printf("ADC TypeC PowerIN  = %d(mV)\r\n",CalVal.Power_IN);

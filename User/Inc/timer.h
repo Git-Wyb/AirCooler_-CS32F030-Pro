@@ -18,5 +18,6 @@ void Fan_Off(void);
 void Init_Timer1(u16 pwm);
 void Fan_Pwm(u16 pwm);
 void Init_Timer3(void);
+void wait_ms(u16 ms);
 
 #endif

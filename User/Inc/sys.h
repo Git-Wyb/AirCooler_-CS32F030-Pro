@@ -54,7 +54,7 @@ extern BaseFlagStu Un_Flag1;
 #define flag_flow               Un_Flag1.Bit.b3 //水流
 #define flag_level              Un_Flag1.Bit.b4 //水位
 #define flag_cover              Un_Flag1.Bit.b5 //盖板
-#define flag_adc_ok             Un_Flag1.Bit.b6 //盖板
+#define flag_adc_ok             Un_Flag1.Bit.b6 
 #define flag_power              Un_Flag1.Bit.b7 //power
 
 extern u16 fan_pwm_set;
@@ -63,6 +63,7 @@ extern u16 time_ms;
 extern u32 time_pump;
 extern u32 time_run;
 extern u32 run_cnt;
+extern u16 ms_cnt;
 extern u16 Adc_Value_Buff[5][7];
 extern BaseValueStu Adc_Val;
 extern BaseValueStu CalVal;
@@ -70,6 +71,7 @@ extern uint32_t Vref_Cal;
 extern u8 water_pump_state;
 extern u8 Solenoid_state;
 extern u8 PowerIN_state;
+extern u8 power_input;
 
 //void Init_IWDG(void);
 //void R_WDT_Restart(void);
@@ -81,5 +83,7 @@ void Init_FWDT(void);
 void FWDT_Clear(void);
 void Init_system_clock(void);
 void waiting_ms(u16 ms);
+u16 DataFlash_Write_half_word(u16 addroffset,u16 data);
+u16 DataFlash_Read_half_word(u16 addroffset);
 
 #endif

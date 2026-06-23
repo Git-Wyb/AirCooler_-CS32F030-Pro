@@ -46,8 +46,18 @@ void TIM6_IRQHandler(void)
         if(time_ms) time_ms--;
         if(time_pump) time_pump--;
         if(time_run)  time_run--;
+        if(ms_cnt)  ms_cnt--;
         input_detection();
         //pump_wait_off();
+    }
+}
+
+void wait_ms(u16 ms)
+{
+    ms_cnt = ms;
+    while(ms_cnt)
+    {
+        FWDT_Clear();
     }
 }
 

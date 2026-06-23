@@ -42,7 +42,7 @@ u8 rxdata = 0;
 void USART1_IRQHandler(void)
 {   /*
     if (__USART_FLAG_STATUS_GET(USART1, TXE) == SET)
-    {   /* When key Pressed send the command then send the data 
+    {   // When key Pressed send the command then send the data 
         if(tx_index != buf_len-1)
         {
             __USART_DATA_SEND(USART1, tx_buf[tx_index++]);
@@ -51,7 +51,7 @@ void USART1_IRQHandler(void)
         {
             __USART_DATA_SEND(USART1, CMD_END);
             tx_index = 0x00;
-            /* Disable the USART transmit data register empty interrupt 
+            // Disable the USART transmit data register empty interrupt 
             __USART_INTR_DISABLE(USART1, TXE);
         }
     }*/

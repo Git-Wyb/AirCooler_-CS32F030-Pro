@@ -82,7 +82,7 @@ void input_detection(void)
     key_fan_detec();    //风量选择
     key_pump_detec();   //水泵开关
     water_level_detec();//浮球水位检测 
-    cover_detec();      //改版检测
+    cover_detec();      //盖板检测
 }
 
 u8 key_power_ms = 0;
