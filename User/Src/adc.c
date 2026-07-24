@@ -1,7 +1,7 @@
 #include "adc.h"
 
 #define ADC1_OUTDAT_REG_ADDRESS    0x40012440
-static volatile uint16_t adc_conv[6];
+static volatile uint16_t adc_conv[7];
 
 uint16_t VREFINT_CAL = 0;
 // ∂®“Â–£◊º÷µ¥Ê¥¢µÿ÷∑
@@ -12,6 +12,7 @@ uint16_t Read_VREFINT_CAL(void)
 }
 
 /* ADC 
+Cover_Value:    PA5 -> CH5 //∏«∞ÂºÏ≤‚
 Water_Pump:     PA6 -> CH6 //ÀÆ±√ºÏ≤‚
 Solenoid_Value: PA7 -> CH7 //µÁ¥≈∑ßºÏ≤‚
 Power_IN:       PB0 -> CH8 // ‰»ÎµÁ‘¥ºÏ≤‚
@@ -34,7 +35,7 @@ void adc_config(void)
     __RCU_APB2_CLK_ENABLE(RCU_APB2_PERI_ADC);
     
     //GPIO Config
-    gpio_mode_set(GPIOA, GPIO_PIN_6 | GPIO_PIN_7, GPIO_MODE_ANALOG); 
+    gpio_mode_set(GPIOA, GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7, GPIO_MODE_ANALOG); 
     gpio_mode_set(GPIOB, GPIO_PIN_0 | GPIO_PIN_1, GPIO_MODE_ANALOG);
 
     //ADC1 Config 
@@ -49,6 +50,7 @@ void adc_config(void)
     adc_config_struct.scan_direction = ADC_SCAN_DIR_UPWARD;
     adc_init(ADC1, &adc_config_struct); 
 
+    adc_channel_config(ADC1, ADC_CONV_CHANNEL_5, ADC_SAMPLE_TIMES_239_5);
     adc_channel_config(ADC1, ADC_CONV_CHANNEL_6, ADC_SAMPLE_TIMES_239_5);  
     adc_channel_config(ADC1, ADC_CONV_CHANNEL_7, ADC_SAMPLE_TIMES_239_5);  
     adc_channel_config(ADC1, ADC_CONV_CHANNEL_8, ADC_SAMPLE_TIMES_239_5);
@@ -82,7 +84,7 @@ static void adc_dma_config(void)
     dma_configStruct.peri_base_addr = (uint32_t)ADC1_OUTDAT_REG_ADDRESS;
     dma_configStruct.mem_base_addr = (uint32_t)adc_conv;
     dma_configStruct.transfer_direct = DMA_TRANS_DIR_FROM_PERI;
-    dma_configStruct.buf_size = 5;
+    dma_configStruct.buf_size = 6;
     dma_configStruct.peri_inc_flag = DMA_PERI_INC_DISABLE;
     dma_configStruct.mem_inc_flag = DMA_MEM_INC_ENABLE;
     dma_configStruct.peri_data_width = DMA_PERI_DATA_WIDTH_HALFWORD;
@@ -101,12 +103,13 @@ static void adc_dma_config(void)
 
 u8 vy = 0;
 u8 vx = 0;
+/*
 void DMA1_Channel1_IRQHandler(void)
 {
     if(__DMA_FLAG_STATUS_GET(CMP1) == SET)
     {
         __DMA_FLAG_CLEAR(DMA1_FLAG_CMP1);
-        for(vx = 0; vx < 5; vx++)
+        for(vx = 0; vx < 6; vx++)
         {
             Adc_Value_Buff[vx][vy] = adc_conv[vx];
         }
@@ -118,6 +121,7 @@ void DMA1_Channel1_IRQHandler(void)
         }
     }
 }
+*/
 
 void adc_dma_value(void)
 {
@@ -127,7 +131,7 @@ void adc_dma_value(void)
     {
         __DMA_FLAG_CLEAR(DMA1_FLAG_CMP1);
         
-        for(vx = 0; vx < 5; vx++)
+        for(vx = 0; vx < 6; vx++)
         {
             Adc_Value_Buff[vx][vy] = adc_conv[vx];
         }

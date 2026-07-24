@@ -13,11 +13,13 @@
 //INPUT
 #define KEY_POWER           GPIOx_IN(GPIOA,GPIO_PIN_0)  
 #define KEY_FAN             GPIOx_IN(GPIOA,GPIO_PIN_1)
-#define KEY_PUMP            GPIOx_IN(GPIOA,GPIO_PIN_2)
-#define WATER_FLOW_DETEC    GPIOx_IN(GPIOA,GPIO_PIN_3)
+#define KEY_PUMP            GPIOx_IN(GPIOA,GPIO_PIN_3)
 #define WATER_LEVEL_DETEC   GPIOx_IN(GPIOA,GPIO_PIN_4)
 #define COVER_DETEC         GPIOx_IN(GPIOA,GPIO_PIN_5)
 #define TEST_PIN            GPIOx_IN(GPIOF,GPIO_PIN_7)
+#define SW2_LOW_INPUT       GPIOx_IN(GPIOA,GPIO_PIN_0)
+#define SW2_MID_INPUT       GPIOx_IN(GPIOA,GPIO_PIN_1)
+#define SW2_MAX_INPUT       GPIOx_IN(GPIOA,GPIO_PIN_2)
 
 //OUTPUT
 #define LED_WATER(x)        GPIOx_OUT(GPIOB,GPIO_PIN_15,x)
@@ -52,5 +54,7 @@ void pump_wait_off(void);
 void user_switch_pump(u8 onoff,u32 utime);
 void user_switch_solenoid(u8 onoff,u32 utime);
 void auto_test(void);
+void Fan_Air_Set(u8 airflow);
+void sw2_input_detec(void);
 
 #endif

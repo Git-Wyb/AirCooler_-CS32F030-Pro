@@ -12,8 +12,9 @@ void Init_Gpio(void)
     gpio_mode_set(GPIOA, GPIO_PIN_0, GPIO_MODE_IN_PU);
     gpio_mode_set(GPIOA, GPIO_PIN_1, GPIO_MODE_IN_PU);
     gpio_mode_set(GPIOA, GPIO_PIN_2, GPIO_MODE_IN_PU);
+    gpio_mode_set(GPIOA, GPIO_PIN_3, GPIO_MODE_IN_PU);
     gpio_mode_set(GPIOA, GPIO_PIN_4, GPIO_MODE_IN_PU);
-    gpio_mode_set(GPIOA, GPIO_PIN_5, GPIO_MODE_IN_PU);
+    //gpio_mode_set(GPIOA, GPIO_PIN_5, GPIO_MODE_IN_PU);
     gpio_mode_set(GPIOF, GPIO_PIN_7, GPIO_MODE_IN_PU); //test pin
     
     //OUTPUT
@@ -47,6 +48,11 @@ void Init_Gpio(void)
     SWITCH_FAN(OFF);
     
     LED_POWER(ON);
+    
+    Sw2LastInput_Stu.low_input = SW2_LOW_INPUT;
+    Sw2LastInput_Stu.mid_input = SW2_MID_INPUT;
+    Sw2LastInput_Stu.max_input = SW2_MAX_INPUT;
+    Fan_Air_Set(Sw2LastInput_Stu.sw2_input & 0x07);
 }
 
 void led_fan(u16 grade)
@@ -69,7 +75,7 @@ void led_fan(u16 grade)
             LED_FAN_MAX(ON);
             break;
         default:
-            LED_FAN_LOW(ON);
+            LED_FAN_LOW(OFF);
             LED_FAN_MID(OFF);
             LED_FAN_MAX(OFF);
             break;
@@ -78,11 +84,86 @@ void led_fan(u16 grade)
 
 void input_detection(void)
 {
-    key_switch_power(); //电源按键
-    key_fan_detec();    //风量选择
+    //key_switch_power(); //电源按键
+    //key_fan_detec();    //风量选择
+    sw2_input_detec();
     key_pump_detec();   //水泵开关
     water_level_detec();//浮球水位检测 
-    cover_detec();      //盖板检测
+    //cover_detec();      //盖板检测
+}
+
+u8 sw2_cnt = 0;
+u8 sw_ms = 0;
+void sw2_input_detec(void)
+{
+    sw_ms++;
+    if(sw_ms >= 50)
+    {
+        sw_ms = 0;
+        Sw2Input_Stu.low_input = SW2_LOW_INPUT;
+        Sw2Input_Stu.mid_input = SW2_MID_INPUT;
+        Sw2Input_Stu.max_input = SW2_MAX_INPUT;
+        if((Sw2LastInput_Stu.sw2_input & 0x07) != (Sw2Input_Stu.sw2_input & 0x07))
+        {
+            sw2_cnt++;
+            if(sw2_cnt >= 2) //100ms
+            {
+                if(Sw2Input_Stu.sw2_input & 0x07 == 0x07)
+                {
+                    if(sw2_cnt >= 6) //300ms
+                    {
+                        sw2_cnt = 0;
+                        Sw2LastInput_Stu.low_input = Sw2Input_Stu.low_input;
+                        Sw2LastInput_Stu.mid_input = Sw2Input_Stu.mid_input;
+                        Sw2LastInput_Stu.max_input = Sw2Input_Stu.max_input;
+                        Fan_Air_Set(Sw2Input_Stu.sw2_input & 0x07);
+                    }
+                }
+                else
+                {
+                    sw2_cnt = 0;
+                    Sw2LastInput_Stu.low_input = Sw2Input_Stu.low_input;
+                    Sw2LastInput_Stu.mid_input = Sw2Input_Stu.mid_input;
+                    Sw2LastInput_Stu.max_input = Sw2Input_Stu.max_input;
+                    Fan_Air_Set(Sw2Input_Stu.sw2_input & 0x07);
+                }
+            }
+        }
+        else
+        {
+            sw2_cnt = 0;
+        }
+    }
+}
+
+void Fan_Air_Set(u8 airflow)
+{
+    switch(airflow)
+    {
+        case 0x06:
+            fan_pwm_set = D_PWM_LOW;
+            Fan_Pwm(fan_pwm_set);
+            led_fan(fan_pwm_set);
+            break;
+        
+        case 0x05:
+            fan_pwm_set = D_PWM_MID;
+            Fan_Pwm(fan_pwm_set);
+            led_fan(fan_pwm_set);
+            break;
+    
+        case 0x03:
+            fan_pwm_set = D_PWM_MAX;
+            Fan_Pwm(fan_pwm_set);
+            led_fan(fan_pwm_set);
+            break;
+        
+        default:
+            fan_pwm_set = D_PWM_LOW;
+            Fan_Off();
+            POWER_ON(OFF);
+            break;
+    }
 }
 
 u8 key_power_ms = 0;
@@ -101,13 +182,13 @@ void key_switch_power(void)
                 {
                     flag_power = 0;
                     POWER_ON(OFF);
-                    LED_POWER(OFF)
+                    LED_POWER(OFF);
                 }
                 else
                 {
                     flag_power = 1;
                     POWER_ON(ON);
-                    LED_POWER(ON)
+                    LED_POWER(ON);
                 }
             }
         }
@@ -281,7 +362,7 @@ void water_level_detec(void)
 u8 cover_ms = 0;
 void cover_detec(void)
 {
-    if(COVER_DETEC == 0 && flag_cover == 0)
+    if(COVER_DETEC == 0 && flag_cover_state == 0)
     {
         cover_ms++;
         if(cover_ms > 50)
@@ -289,14 +370,14 @@ void cover_detec(void)
             cover_ms = 0;
             if(COVER_DETEC == 0)
             {
-                flag_cover = 1;
+                flag_cover_state = 1;
                 LED_ABNORMAL(ON);
             }
         }
     }
     else
     {
-        if(COVER_DETEC == 1 && flag_cover == 1)
+        if(COVER_DETEC == 1 && flag_cover_state == 1)
         {
             cover_ms++;
             if(cover_ms > 50)
@@ -304,7 +385,7 @@ void cover_detec(void)
                 cover_ms = 0;
                 if(COVER_DETEC == 1)
                 {
-                    flag_cover = 0;
+                    flag_cover_state = 0;
                     LED_ABNORMAL(OFF);
                 }
             }

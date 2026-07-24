@@ -5,23 +5,24 @@
 #define DATA_FLASH_SIZE      192
 
 u16 fan_pwm_set = D_PWM_LOW;//D_PWM_MAX
-u8 fan_speed_set = 2;
+u8 fan_speed_set = 0;
 BaseFlagStu Un_Flag0 = {0};
 BaseFlagStu Un_Flag1 = {0};
 BaseValueStu Adc_Val = {0};
 BaseValueStu CalVal = {0};
+SW2_STU Sw2Input_Stu = {0};
+SW2_STU Sw2LastInput_Stu = {0};
 
 u16 time_ms = 0;
 u32 time_pump = 0;
 u32 time_run = 0;
 u32 run_cnt = 0;
 u16 ms_cnt = 0;
-u16 Adc_Value_Buff[5][7] = {0};
+u16 Adc_Value_Buff[6][7] = {0};
 uint32_t Vref_Cal = 0;
 u8 water_pump_state = 0;
 u8 Solenoid_state = 0;
 u8 PowerIN_state = 0;
-u8 power_input = 0;
 
 void Init_system_clock(void)
 {

@@ -4,7 +4,8 @@
 #include "sys.h"
 
 typedef enum{
-    WaterPump_Index = 0,
+    Cover_Index = 0,
+    WaterPump_Index,
     SolValue_Index,
     PowerIN_Index,
     Power24V_Index,

@@ -210,6 +210,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>__FWDT_FLAG_STATUS_GET(DRF)</ItemText>
         </Ww>
+        <Ww>
+          <count>11</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>CalVal.Cover_Value,0x0A</ItemText>
+        </Ww>
       </WatchWindow1>
       <Tracepoint>
         <THDelay>0</THDelay>

@@ -10,6 +10,7 @@ void get_adc_value_deal(void)
     if(flag_adc_ok)
     {
         flag_adc_ok = 0;
+        Adc_Val.Cover_Value = bubble_sort_average_value(&Adc_Value_Buff[Cover_Index][0],7);
         Adc_Val.Water_Pump = bubble_sort_average_value(&Adc_Value_Buff[WaterPump_Index][0],7);
         Adc_Val.Sol_Value  = bubble_sort_average_value(&Adc_Value_Buff[SolValue_Index][0],7);
         Adc_Val.Power_IN   = bubble_sort_average_value(&Adc_Value_Buff[PowerIN_Index][0],7);
@@ -17,12 +18,24 @@ void get_adc_value_deal(void)
         Adc_Val.Refint_IN  = bubble_sort_average_value(&Adc_Value_Buff[RefintIN_Index][0],7);
                             //1530          //1000/1260
         Vref_Cal = (3300 * VREFINT_CAL) / (Adc_Val.Refint_IN); //3300mV  //4999
+        CalVal.Cover_Value = (Vref_Cal * Adc_Val.Cover_Value) / 4095;//mV
         CalVal.Water_Pump = (Vref_Cal * Adc_Val.Water_Pump) / 4095;//mV
         CalVal.Sol_Value  = (Vref_Cal * Adc_Val.Sol_Value) / 4095; //232mv
         CalVal.Power_IN   = (Vref_Cal * Adc_Val.Power_IN) / 4095;  //1925mV
         CalVal.Power_24V  = (Vref_Cal * Adc_Val.Power_24V) / 4095; //2155mv
         
-        if(flag_fan_sw == 0 && CalVal.Power_24V >= Power_24V_TYPE-50)
+        if(CalVal.Cover_Value >= 1500) //±ÕºÏ2500mv£¬´ò¿ª290mv
+        {
+            flag_cover_state = 1;
+            LED_ABNORMAL(OFF);
+        }
+        else
+        {
+            flag_cover_state = 0;
+            LED_ABNORMAL(ON);
+        }
+        
+        if(flag_fan_sw == 0 && CalVal.Power_24V >= Power_24V_TYPE-50 && flag_cover_state == 1)
         {
             flag_fan_sw = 1;
             Fan_Open();
@@ -50,13 +63,6 @@ void get_adc_value_deal(void)
         else water_pump_state = 0;
     }
 }
-
-void water_pump_solenoid_deal(void)
-{
-    
-    
-}
-
 
 
 u16 bubble_sort_average_value(u16 *buff,u16 len)

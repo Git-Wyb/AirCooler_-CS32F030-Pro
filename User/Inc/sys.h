@@ -17,12 +17,28 @@ typedef unsigned int u32;
 typedef float f32;
 
 typedef struct{
+    u16 Cover_Value;
     u16 Water_Pump;
     u16 Sol_Value;
     u16 Power_IN;
     u16 Power_24V;
     u16 Refint_IN;
 }BaseValueStu;
+
+typedef union{
+    u8 sw2_input;
+    struct
+    {
+        u8 low_input : 1;
+        u8 mid_input : 1;
+        u8 max_input : 1;
+        u8 b3 : 1;
+        u8 b4 : 1;
+        u8 b5 : 1;
+        u8 b6 : 1;
+        u8 b7 : 1;
+    };
+}SW2_STU;
 
 typedef union{
     u8 Flag;
@@ -53,7 +69,7 @@ extern BaseFlagStu Un_Flag1;
 #define flag_pump               Un_Flag1.Bit.b2 //水泵
 #define flag_flow               Un_Flag1.Bit.b3 //水流
 #define flag_level              Un_Flag1.Bit.b4 //水位
-#define flag_cover              Un_Flag1.Bit.b5 //盖板
+#define flag_cover_state        Un_Flag1.Bit.b5 //盖板
 #define flag_adc_ok             Un_Flag1.Bit.b6 
 #define flag_power              Un_Flag1.Bit.b7 //power
 
@@ -64,14 +80,15 @@ extern u32 time_pump;
 extern u32 time_run;
 extern u32 run_cnt;
 extern u16 ms_cnt;
-extern u16 Adc_Value_Buff[5][7];
+extern u16 Adc_Value_Buff[6][7];
 extern BaseValueStu Adc_Val;
 extern BaseValueStu CalVal;
 extern uint32_t Vref_Cal;
 extern u8 water_pump_state;
 extern u8 Solenoid_state;
 extern u8 PowerIN_state;
-extern u8 power_input;
+extern SW2_STU Sw2Input_Stu;
+extern SW2_STU Sw2LastInput_Stu;
 
 //void Init_IWDG(void);
 //void R_WDT_Restart(void);
