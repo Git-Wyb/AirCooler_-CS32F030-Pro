@@ -8,6 +8,7 @@ u16 fan_pwm_set = D_PWM_LOW;//D_PWM_MAX
 u8 fan_speed_set = 0;
 BaseFlagStu Un_Flag0 = {0};
 BaseFlagStu Un_Flag1 = {0};
+ERR_STU Error_Stu = {0};
 BaseValueStu Adc_Val = {0};
 BaseValueStu CalVal = {0};
 SW2_STU Sw2Input_Stu = {0};
@@ -22,7 +23,8 @@ u16 Adc_Value_Buff[6][7] = {0};
 uint32_t Vref_Cal = 0;
 u8 water_pump_state = 0;
 u8 Solenoid_state = 0;
-u8 PowerIN_state = 0;
+u8 PowerIN_state = 1;
+u8 typec_sel = 0;
 
 void Init_system_clock(void)
 {

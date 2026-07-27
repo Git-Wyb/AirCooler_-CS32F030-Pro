@@ -34,7 +34,8 @@ int main(void)
     Init_Uart1();
     Init_Timer3();
     Init_ADC1();
-    //Fan_Open();
+    time_ms = 100;
+    while(Power_supply_detection()) FWDT_Clear();
     while (1)
     {
         FWDT_Clear();
@@ -45,6 +46,7 @@ int main(void)
         }
         adc_dma_value();
         get_adc_value_deal();
+        AirCooler_Worke();
         Send_Logo();
     }
 }

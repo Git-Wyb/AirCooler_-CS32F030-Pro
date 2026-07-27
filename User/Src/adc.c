@@ -124,9 +124,7 @@ void DMA1_Channel1_IRQHandler(void)
 */
 
 void adc_dma_value(void)
-{
-    //while((__DMA_FLAG_STATUS_GET(CMP1)) == RESET );     // wait DMA1 CMP1 flag.
-    //__DMA_FLAG_CLEAR(DMA1_FLAG_CMP1);                   // Clear DMA CMP1 flag.
+{                 // Clear DMA CMP1 flag.
     if(__DMA_FLAG_STATUS_GET(CMP1) == SET)
     {
         __DMA_FLAG_CLEAR(DMA1_FLAG_CMP1);

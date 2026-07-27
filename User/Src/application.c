@@ -26,20 +26,19 @@ void get_adc_value_deal(void)
         
         if(CalVal.Cover_Value >= 1500) //±ÕºÏ2500mv£¬´ò¿ª290mv
         {
-            flag_cover_state = 1;
-            LED_ABNORMAL(OFF);
+            Error_Stu.err_cover = 0;
         }
         else
         {
-            flag_cover_state = 0;
-            LED_ABNORMAL(ON);
+            Error_Stu.err_cover = 1;
         }
         
-        if(flag_fan_sw == 0 && CalVal.Power_24V >= Power_24V_TYPE-50 && flag_cover_state == 1)
-        {
-            flag_fan_sw = 1;
-            Fan_Open();
-        }
+        if(CalVal.Power_IN > POWER_IN_15V)     PowerIN_state = 3;
+        else if(CalVal.Power_IN > POWER_IN_9V) PowerIN_state = 2;
+        else PowerIN_state = 1;
+        
+        if(CalVal.Power_24V >= Power_24V_TYPE-50) Error_Stu.err_24v = 0;
+        else Error_Stu.err_24v = 1;
         
         if(CalVal.Sol_Value >= SOL_VALUE_TYPE-30)   Solenoid_state = 1;
         else Solenoid_state = 0;
@@ -64,6 +63,93 @@ void get_adc_value_deal(void)
     }
 }
 
+void AirCooler_Worke(void)
+{
+    if(flag_fan_sw==0 && Error_Stu.err_cover==0 && Error_Stu.err_24v==0)
+    {
+        flag_fan_sw = 1;
+        Fan_Open();
+    }
+    if(flag_fan_sw)
+    {
+        
+    }
+    error_deal();
+}
+
+void error_deal(void)
+{
+    if(Error_Stu.err_byte != 0)
+    {
+        LED_ABNORMAL(ON);
+    }
+    else LED_ABNORMAL(OFF);
+    
+    if(flag_fan_sw == 1)
+    {
+        if(Error_Stu.err_cover==1 || Error_Stu.err_24v==1) Fan_Off();
+    }
+}
+
+u8 Power_supply_detection(void)
+{
+    adc_dma_value();
+    if(flag_adc_ok && time_ms == 0)
+    {
+        flag_adc_ok = 0;
+        time_ms = 100;
+        Adc_Val.Power_IN   = bubble_sort_average_value(&Adc_Value_Buff[PowerIN_Index][0],7);
+        Adc_Val.Refint_IN  = bubble_sort_average_value(&Adc_Value_Buff[RefintIN_Index][0],7);
+        Vref_Cal = (3300 * VREFINT_CAL) / (Adc_Val.Refint_IN); //3300mV  //4999
+        CalVal.Power_IN = (Vref_Cal * Adc_Val.Power_IN) / 4095;  //1925mV
+
+        if(typec_sel == TYPEC_20V && CalVal.Power_IN < POWER_IN_20V)//1844
+        {
+            type_c_select(TYPEC_12V);
+            return 1;
+        }
+        else if(typec_sel == TYPEC_12V && CalVal.Power_IN < POWER_IN_12V)//1175
+        {
+            type_c_select(TYPEC_9V);
+            return 1;
+        }
+        else if(typec_sel == TYPEC_9V && CalVal.Power_IN < POWER_IN_9V)//818
+        {
+            type_c_select(TYPEC_5V);
+            return 1;
+        }
+        return 0;
+    }
+    return 1;
+}
+
+void type_c_select(TYPEC_SEL sel)
+{
+    switch(sel)
+    {
+        case TYPEC_9V:
+            CH224A_CFG2(0);
+            CH224A_CFG3(0); //9V
+            typec_sel = TYPEC_9V;
+            break;
+        
+        case TYPEC_12V:
+            CH224A_CFG2(0);
+            CH224A_CFG3(1); //12V
+            typec_sel = TYPEC_12V;
+            break;
+        
+        case TYPEC_20V:
+            CH224A_CFG2(1);
+            CH224A_CFG3(1); //20V
+            typec_sel = TYPEC_20V;
+            break;
+        
+        default:
+            typec_sel = TYPEC_5V;
+            break;
+    }
+}
 
 u16 bubble_sort_average_value(u16 *buff,u16 len)
 {

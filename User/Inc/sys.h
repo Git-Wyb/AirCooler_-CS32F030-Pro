@@ -41,6 +41,21 @@ typedef union{
 }SW2_STU;
 
 typedef union{
+    u8 err_byte;
+    struct
+    {
+        u8 err_cover : 1;
+        u8 err_sol   : 1;
+        u8 err_pump  : 1;
+        u8 err_24v   : 1;
+        u8 b4 : 1;
+        u8 b5 : 1;
+        u8 b6 : 1;
+        u8 b7 : 1;
+    };
+}ERR_STU;
+
+typedef union{
     u8 Flag;
     struct
     {
@@ -57,6 +72,7 @@ typedef union{
 
 extern BaseFlagStu Un_Flag0;
 extern BaseFlagStu Un_Flag1;
+extern ERR_STU Error_Stu;
     
 #define key_power_sta           Un_Flag0.Bit.b0
 #define key_fan_sta             Un_Flag0.Bit.b1
@@ -65,7 +81,7 @@ extern BaseFlagStu Un_Flag1;
 #define flag_rx_done            Un_Flag0.Bit.b4
 
 #define flag_fan_sw             Un_Flag1.Bit.b0
-#define flag_fan                Un_Flag1.Bit.b1
+#define flag_power_24v          Un_Flag1.Bit.b1
 #define flag_pump               Un_Flag1.Bit.b2 //水泵
 #define flag_flow               Un_Flag1.Bit.b3 //水流
 #define flag_level              Un_Flag1.Bit.b4 //水位
@@ -89,6 +105,7 @@ extern u8 Solenoid_state;
 extern u8 PowerIN_state;
 extern SW2_STU Sw2Input_Stu;
 extern SW2_STU Sw2LastInput_Stu;
+extern u8 typec_sel;
 
 //void Init_IWDG(void);
 //void R_WDT_Restart(void);

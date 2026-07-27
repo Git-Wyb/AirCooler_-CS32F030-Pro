@@ -4,7 +4,11 @@
 
 #define SOL_VALUE_TYPE   232
 #define POWER_IN_TYPE    1925
-#define Power_24V_TYPE   2155
+#define Power_24V_TYPE   2100
+#define POWER_IN_20V     1700
+#define POWER_IN_15V     1400
+#define POWER_IN_12V     1000
+#define POWER_IN_9V      700
 
 /*
 ²»¹¤×÷£º0mv
@@ -18,10 +22,21 @@
 #define WATER_PUMP_HALF_TYPE    157
 #define WATER_PUMP_COMP_TYPE    210    
 
+typedef enum
+{
+    TYPEC_5V,
+    TYPEC_9V,
+    TYPEC_12V,
+    TYPEC_15V,
+    TYPEC_20V
+}TYPEC_SEL;
+
 
 u16 bubble_sort_average_value(u16 *buff,u16 len);
 void get_adc_value_deal(void);
-
-
+void type_c_select(TYPEC_SEL sel);
+u8 Power_supply_detection(void);
+void AirCooler_Worke(void);
+void error_deal(void);
 
 #endif

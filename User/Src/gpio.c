@@ -1,6 +1,7 @@
 #include "gpio.h"
 #include "timer.h"
 #include "uart.h"
+#include "application.h"
 
 void Init_Gpio(void)
 {
@@ -36,8 +37,8 @@ void Init_Gpio(void)
     POWER_ON(ON);
     key_power_sta = 1;
     flag_power = 1;
-    CH224A_CFG2(0);
-    CH224A_CFG3(0); //20V
+    
+    type_c_select(TYPEC_20V);
     
     LED_WATER(OFF);
     LED_FAN_MAX(OFF);
@@ -97,7 +98,7 @@ u8 sw_ms = 0;
 void sw2_input_detec(void)
 {
     sw_ms++;
-    if(sw_ms >= 50)
+    if(sw_ms >= 10)
     {
         sw_ms = 0;
         Sw2Input_Stu.low_input = SW2_LOW_INPUT;
@@ -106,11 +107,11 @@ void sw2_input_detec(void)
         if((Sw2LastInput_Stu.sw2_input & 0x07) != (Sw2Input_Stu.sw2_input & 0x07))
         {
             sw2_cnt++;
-            if(sw2_cnt >= 2) //100ms
+            if(sw2_cnt >= 10) //100ms
             {
                 if(Sw2Input_Stu.sw2_input & 0x07 == 0x07)
                 {
-                    if(sw2_cnt >= 6) //300ms
+                    if(sw2_cnt >= 30) //300ms
                     {
                         sw2_cnt = 0;
                         Sw2LastInput_Stu.low_input = Sw2Input_Stu.low_input;
@@ -138,6 +139,12 @@ void sw2_input_detec(void)
 
 void Fan_Air_Set(u8 airflow)
 {
+    if(PowerIN_state == 2) 
+    {
+        if(airflow < 0x05) airflow = 0x05;
+    }
+    else if(PowerIN_state == 1) airflow = 0;
+    
     switch(airflow)
     {
         case 0x06:
@@ -160,6 +167,9 @@ void Fan_Air_Set(u8 airflow)
         
         default:
             fan_pwm_set = D_PWM_LOW;
+            LED_FAN_LOW(OFF);
+            LED_FAN_MID(OFF);
+            LED_FAN_MAX(OFF);
             Fan_Off();
             POWER_ON(OFF);
             break;
