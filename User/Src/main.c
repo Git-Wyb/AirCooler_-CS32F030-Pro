@@ -39,11 +39,6 @@ int main(void)
     while (1)
     {
         FWDT_Clear();
-        if(time_run == 0) //抽水结束，吹10分钟之后再次抽水
-        {
-            //user_switch_pump(ON,20000);
-            //auto_test();
-        }
         adc_dma_value();
         get_adc_value_deal();
         AirCooler_Worke();

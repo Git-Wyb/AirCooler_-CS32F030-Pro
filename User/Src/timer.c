@@ -9,9 +9,9 @@ u16 capture = 0;
 u16 t_cycle1 = 0;
 u16 t_cycle2 = 0;
 u8 capture_flag = 0;
-
+u16 time_300ms = 0;
 u32 fan_rpm = 0;
-
+u8 si = 0,sk = 0;
 void Init_Timer6(void)
 {
     tim_base_t timer_config_struct;
@@ -47,8 +47,55 @@ void TIM6_IRQHandler(void)
         if(time_pump) time_pump--;
         if(time_run)  time_run--;
         if(ms_cnt)  ms_cnt--;
+        if(time_wait) time_wait--;
+        if(time_pump_water_again) time_pump_water_again--;
         input_detection();
-        //pump_wait_off();
+        
+        time_300ms++;
+        if(time_300ms >= 300)
+        {
+            time_300ms = 0;
+            if(flag_hydropenia == 1)
+            {
+                si++;
+                if(si == 1) 
+                {
+                    LED_WATER(ON);
+                }
+                else
+                {
+                    si = 0;
+                    LED_WATER(OFF);
+                }
+            }
+            else 
+            {
+                if(si == 1)
+                {                   
+                    LED_WATER(OFF);
+                }
+                si = 0;
+            }
+            
+            if(flag_COMP_TYPE == 1 || Error_Stu.err_byte != 0)
+            {
+                sk++;
+                if(sk == 1) 
+                {
+                    LED_ABNORMAL(ON);
+                }
+                else
+                {
+                    sk = 0;
+                    LED_ABNORMAL(OFF);
+                }
+            }
+            else 
+            {
+                if(sk == 1) LED_ABNORMAL(OFF);
+                sk = 0;
+            }
+        }
     }
 }
 
@@ -99,7 +146,7 @@ void Fan_Open(void)
     Init_Timer1(fan_pwm_set);
     __TIM_ENABLE(TIM1);                 // TIM1 counter enable
     __TIM_FUNC_ENABLE(TIM1, CH_OUTPUT); // TIM1 PWM Output Enable.
-    led_fan(fan_pwm_set);
+
     flag_fan_sw = 1;
     
     read_value1 = 0;

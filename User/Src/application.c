@@ -36,9 +36,9 @@ void get_adc_value_deal(void)
         if(CalVal.Power_IN > POWER_IN_15V)     PowerIN_state = 3;
         else if(CalVal.Power_IN > POWER_IN_9V) PowerIN_state = 2;
         else PowerIN_state = 1;
-        
-        if(CalVal.Power_24V >= Power_24V_TYPE-50) Error_Stu.err_24v = 0;
-        else Error_Stu.err_24v = 1;
+
+        //if(CalVal.Power_24V >= Power_24V_TYPE-50) Error_Stu.err_24v = 0;
+        //else Error_Stu.err_24v = 1;
         
         if(CalVal.Sol_Value >= SOL_VALUE_TYPE-30)   Solenoid_state = 1;
         else Solenoid_state = 0;
@@ -50,44 +50,257 @@ void get_adc_value_deal(void)
         else if(WATER_PUMP_NORMAL_TYPE-52 <= CalVal.Water_Pump && CalVal.Water_Pump <= WATER_PUMP_NORMAL_TYPE+30) //53-135
         {
             water_pump_state = 2;
+            flag_hydropenia = 0;
         }
         else if(WATER_PUMP_HALF_TYPE-22 <= CalVal.Water_Pump && CalVal.Water_Pump <= WATER_PUMP_HALF_TYPE+30) //135-187
         {
             water_pump_state = 3;
+            flag_hydropenia = 0;
         }
         else if(WATER_PUMP_COMP_TYPE-23 <= CalVal.Water_Pump)  //187
         {
             water_pump_state = 4;
         }
         else water_pump_state = 0;
+        
+        flag_fan_worker = 1;
+        flag_adc_pump = 1;
     }
 }
 
 void AirCooler_Worke(void)
 {
-    if(flag_fan_sw==0 && Error_Stu.err_cover==0 && Error_Stu.err_24v==0)
+    if(flag_fan_worker==1 && flag_fan_sw==0 && Error_Stu.err_cover==0 && Error_Stu.err_24v==0)
     {
-        flag_fan_sw = 1;
-        Fan_Open();
-    }
-    if(flag_fan_sw)
-    {
-        
+        if(PowerIN_state >= 2)
+        {
+            flag_fan_sw = 1;
+            Fan_Open();
+            led_fan(fan_pwm_set);
+            time_wait = 2000; //2s
+            worker_step = 1;
+        }
     }
     error_deal();
+    water_pump_worker();
+} 
+
+u32 nexttime = 0;
+u8 pump_idle_cnt = 0;
+u8 pump_comp_cnt = 0;
+void water_pump_worker(void)
+{
+    if(flag_fan_sw)
+    {
+        switch(worker_step)
+        {
+            case 0:
+                time_pump = 0;
+                time_wait = 0;
+                flag_pump = 0;
+                if(first_water_pump == 1 && time_pump_water_again == 0)
+                {
+                    worker_step = 1;
+                }
+                break;
+            
+            case 1:
+                if(time_wait == 0)
+                {
+                    if(first_water_pump == 0) time_pump = 10000; //60s
+                    else time_pump = 10000;
+                    first_water_pump = 1;
+                    SWITCH_PUMP(ON);
+                    flag_pump = 1;
+                    flag_adc_pump = 0;
+                    time_wait = 1000;
+                    worker_step = 2;
+                }
+                break;
+            
+            case 2:
+                if(time_wait == 0)
+                {
+                    time_wait = 500;
+                    if(flag_adc_pump == 1 && flag_pump == 1)
+                    {
+                        flag_adc_pump = 0;
+                        switch(water_pump_state)
+                        {
+                            case 1: //Ë®±Ã³é¿Õ
+                                pump_comp_cnt = 0;
+                                pump_idle_cnt++;
+                                if(pump_idle_cnt >= 6) //3s
+                                {
+                                    pump_idle_cnt = 0;
+                                    SWITCH_PUMP(OFF);
+                                    flag_pump = 0;
+                                    nexttime = time_pump; 
+                                    if(nexttime > 2000) //More than 3 seconds remaining
+                                    {
+                                        //wait_ms(50);
+                                        SWITCH_SOLEN(ON); //Turn on the solenoid valve to draw water from the water tank
+                                        worker_step = 3;
+                                        time_wait = 500;
+                                    }
+                                }
+                                break;
+                                
+                            case 4: //Ë®±Ã¶ÂËÀ
+                                pump_idle_cnt = 0;
+                                pump_comp_cnt++;
+                                if(pump_comp_cnt >= 10)
+                                {
+                                    pump_comp_cnt = 0;
+                                    SWITCH_PUMP(OFF);
+                                    SWITCH_SOLEN(OFF);
+                                    time_pump = 0;
+                                    flag_pump = 0;
+                                    flag_COMP_TYPE = 1;
+                                    time_pump_water_again = 0;
+                                    first_water_pump = 0;
+                                    worker_step = 0;
+                                }
+                                break;
+                                
+                            default:
+                                pump_idle_cnt = 0;
+                                pump_comp_cnt = 0;
+                                break;
+                        }
+                    }
+                }
+                if(time_pump == 0 || flag_level == 1)
+                {
+                    SWITCH_PUMP(OFF);
+                    SWITCH_SOLEN(OFF);
+                    flag_pump = 0;
+                    time_wait = 0;
+                    time_pump = 0;
+                    worker_step = 0;
+                    if(first_water_pump)
+                    {
+                        time_pump_water_again = TIME_PUMP_WATER_AGAIN;
+                    }
+                }
+                break;
+                
+            case 3:
+                if(time_wait == 0)
+                {
+                    SWITCH_PUMP(ON);
+                    flag_pump = 1;
+                    flag_adc_pump = 0;
+                    time_pump = nexttime;
+                    worker_step = 4;
+                    time_wait = 1000;
+                }
+                if(time_pump == 0 || flag_level == 1)
+                {
+                    SWITCH_PUMP(OFF);
+                    flag_adc_pump = 0;
+                    flag_pump = 0;
+                    time_pump = 0;
+                    time_wait = 0;
+                    //wait_ms(50);
+                    SWITCH_SOLEN(OFF);
+                    worker_step = 0;
+                    if(first_water_pump)
+                    {
+                        time_pump_water_again = TIME_PUMP_WATER_AGAIN;
+                    }
+                }
+                break;
+                
+            case 4:
+                if(time_wait == 0)
+                {
+                    time_wait = 500;
+                    if(flag_adc_pump == 1 && flag_pump == 1)
+                    {
+                        flag_adc_pump = 0;
+                        switch(water_pump_state)
+                        {
+                            case 1:
+                                pump_comp_cnt = 0;
+                                pump_idle_cnt++;
+                                if(pump_idle_cnt >= 6) //4s
+                                {
+                                    pump_idle_cnt = 0;
+                                    SWITCH_PUMP(OFF);
+                                    flag_pump = 0;
+                                    SWITCH_SOLEN(OFF); //Turn on the solenoid valve to draw water from the water tank
+                                    flag_hydropenia = 1; //È±Ë®
+                                    first_water_pump = 0;
+                                    worker_step = 0;
+                                }
+                                break;
+                            case 4: //Ë®±Ã¶ÂËÀ
+                                pump_idle_cnt = 0;
+                                pump_comp_cnt++;
+                                if(pump_comp_cnt >= 10)
+                                {
+                                    SWITCH_PUMP(OFF);
+                                    flag_pump = 0;
+                                    flag_COMP_TYPE = 1;
+                                    worker_step = 0;
+                                    time_pump_water_again = 0;
+                                    first_water_pump = 0;
+                                }
+                                break;
+                                
+                            default:
+                                pump_idle_cnt = 0;
+                                pump_comp_cnt = 0;
+                                break;
+                        }
+                    }
+                }
+                if(time_pump == 0 || flag_level == 1)
+                {
+                    SWITCH_PUMP(OFF);
+                    flag_pump = 0;
+                    time_pump = 0;
+                    time_wait = 0;
+                    SWITCH_SOLEN(OFF);
+                    worker_step = 0;
+                    if(first_water_pump)
+                    {
+                        time_pump_water_again = TIME_PUMP_WATER_AGAIN;
+                    }
+                }
+                break;
+                       
+            default:
+                break;
+        }
+    }
 }
 
 void error_deal(void)
 {
-    if(Error_Stu.err_byte != 0)
-    {
-        LED_ABNORMAL(ON);
-    }
-    else LED_ABNORMAL(OFF);
-    
     if(flag_fan_sw == 1)
     {
-        if(Error_Stu.err_cover==1 || Error_Stu.err_24v==1) Fan_Off();
+        if(Error_Stu.err_cover==1 || Error_Stu.err_24v==1)
+        {
+            flag_fan_sw = 0;
+            flag_fan_worker = 0;
+            worker_step = 0;
+            SWITCH_PUMP(OFF);
+            flag_pump = 0;
+            time_wait = 0;
+            SWITCH_SOLEN(OFF);
+            Fan_Off();
+        }
+    }
+    if(PowerIN_state < 2)
+    {
+        Fan_Off();
+        SWITCH_PUMP(OFF);
+        flag_pump = 0;
+        time_wait = 0;
+        SWITCH_SOLEN(OFF);
+        worker_step = 0;
     }
 }
 
@@ -128,20 +341,20 @@ void type_c_select(TYPEC_SEL sel)
     switch(sel)
     {
         case TYPEC_9V:
-            CH224A_CFG2(0);
-            CH224A_CFG3(0); //9V
+            CH224A_CFG2(1);
+            CH224A_CFG3(1); //9V
             typec_sel = TYPEC_9V;
             break;
         
         case TYPEC_12V:
-            CH224A_CFG2(0);
-            CH224A_CFG3(1); //12V
+            CH224A_CFG2(1);
+            CH224A_CFG3(0); //12V
             typec_sel = TYPEC_12V;
             break;
         
         case TYPEC_20V:
-            CH224A_CFG2(1);
-            CH224A_CFG3(1); //20V
+            CH224A_CFG2(0);
+            CH224A_CFG3(0); //20V
             typec_sel = TYPEC_20V;
             break;
         

@@ -20,7 +20,10 @@
 #define WATER_PUMP_IDLE_TYPE    33
 #define WATER_PUMP_NORMAL_TYPE  105
 #define WATER_PUMP_HALF_TYPE    157
-#define WATER_PUMP_COMP_TYPE    210    
+#define WATER_PUMP_COMP_TYPE    210   
+
+#define TIME_MINUTE             10 //10∑÷÷”
+#define TIME_PUMP_WATER_AGAIN   (60 * 1000 * TIME_MINUTE) 
 
 typedef enum
 {
@@ -38,5 +41,6 @@ void type_c_select(TYPEC_SEL sel);
 u8 Power_supply_detection(void);
 void AirCooler_Worke(void);
 void error_deal(void);
+void water_pump_worker(void);
 
 #endif

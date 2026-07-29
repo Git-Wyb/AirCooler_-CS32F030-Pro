@@ -34,10 +34,6 @@ void Init_Gpio(void)
     
     gpio_mode_set(GPIOC, GPIO_PIN_13, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     
-    POWER_ON(ON);
-    key_power_sta = 1;
-    flag_power = 1;
-    
     type_c_select(TYPEC_20V);
     
     LED_WATER(OFF);
@@ -53,7 +49,11 @@ void Init_Gpio(void)
     Sw2LastInput_Stu.low_input = SW2_LOW_INPUT;
     Sw2LastInput_Stu.mid_input = SW2_MID_INPUT;
     Sw2LastInput_Stu.max_input = SW2_MAX_INPUT;
-    Fan_Air_Set(Sw2LastInput_Stu.sw2_input & 0x07);
+    //Fan_Air_Set(Sw2LastInput_Stu.sw2_input & 0x07);
+    
+    POWER_ON(ON);
+    key_power_sta = 1;
+    flag_power = 1;
 }
 
 void led_fan(u16 grade)
@@ -88,8 +88,8 @@ void input_detection(void)
     //key_switch_power(); //电源按键
     //key_fan_detec();    //风量选择
     sw2_input_detec();
-    key_pump_detec();   //水泵开关
-    water_level_detec();//浮球水位检测 
+    //key_pump_detec();   //水泵开关
+    water_floater_detec();//浮球水位检测 
     //cover_detec();      //盖板检测
 }
 
@@ -109,15 +109,15 @@ void sw2_input_detec(void)
             sw2_cnt++;
             if(sw2_cnt >= 10) //100ms
             {
-                if(Sw2Input_Stu.sw2_input & 0x07 == 0x07)
+                if((Sw2Input_Stu.sw2_input & 0x07) == 0x07)
                 {
-                    if(sw2_cnt >= 30) //300ms
+                    if(sw2_cnt >= 50) //300ms
                     {
                         sw2_cnt = 0;
                         Sw2LastInput_Stu.low_input = Sw2Input_Stu.low_input;
                         Sw2LastInput_Stu.mid_input = Sw2Input_Stu.mid_input;
                         Sw2LastInput_Stu.max_input = Sw2Input_Stu.max_input;
-                        Fan_Air_Set(Sw2Input_Stu.sw2_input & 0x07);
+                        Fan_Air_Set((Sw2Input_Stu.sw2_input & 0x07));
                     }
                 }
                 else
@@ -126,7 +126,7 @@ void sw2_input_detec(void)
                     Sw2LastInput_Stu.low_input = Sw2Input_Stu.low_input;
                     Sw2LastInput_Stu.mid_input = Sw2Input_Stu.mid_input;
                     Sw2LastInput_Stu.max_input = Sw2Input_Stu.max_input;
-                    Fan_Air_Set(Sw2Input_Stu.sw2_input & 0x07);
+                    Fan_Air_Set((Sw2Input_Stu.sw2_input & 0x07));
                 }
             }
         }
@@ -167,6 +167,9 @@ void Fan_Air_Set(u8 airflow)
         
         default:
             fan_pwm_set = D_PWM_LOW;
+            first_water_pump = 0;
+            SWITCH_PUMP(OFF);
+            SWITCH_SOLEN(OFF);
             LED_FAN_LOW(OFF);
             LED_FAN_MID(OFF);
             LED_FAN_MAX(OFF);
@@ -297,14 +300,12 @@ void user_switch_pump(u8 onoff,u32 utime)
         time_pump = 0;
         LED_WATER(OFF);
         SWITCH_PUMP(OFF);
-        
         SWITCH_SOLEN(OFF);
     }
     else
     {
         flag_pump = 1;
         time_pump = utime;
-        LED_WATER(ON);
         SWITCH_PUMP(ON);
         time_run = 600000 + utime;
         
@@ -336,9 +337,9 @@ void pump_wait_off(void)
 }
 
 u8 water_level_ms = 0;
-void water_level_detec(void)
+void water_floater_detec(void)
 {
-    if(WATER_LEVEL_DETEC == 0 && flag_level == 0)
+    if(WATER_LEVEL_DETEC == 0 && flag_level == 1)
     {
         water_level_ms++;
         if(water_level_ms > 50)
@@ -346,14 +347,14 @@ void water_level_detec(void)
             water_level_ms = 0;
             if(WATER_LEVEL_DETEC == 0)
             {
-                flag_level = 1;
-                LED_WATER(ON);
+                flag_level = 0;
+                //LED_WATER(ON);
             }
         }
     }
     else
     {
-        if(WATER_LEVEL_DETEC == 1 && flag_level == 1)
+        if(WATER_LEVEL_DETEC == 1 && flag_level == 0)
         {
             water_level_ms++;
             if(water_level_ms > 50)
@@ -361,8 +362,8 @@ void water_level_detec(void)
                 water_level_ms = 0;
                 if(WATER_LEVEL_DETEC == 1)
                 {
-                    flag_level = 0;
-                    LED_WATER(OFF);
+                    flag_level = 1;
+                    //LED_WATER(OFF);
                 }
             }
         }

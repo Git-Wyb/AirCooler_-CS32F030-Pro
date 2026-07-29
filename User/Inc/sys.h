@@ -72,6 +72,7 @@ typedef union{
 
 extern BaseFlagStu Un_Flag0;
 extern BaseFlagStu Un_Flag1;
+extern BaseFlagStu Un_Flag2;
 extern ERR_STU Error_Stu;
     
 #define key_power_sta           Un_Flag0.Bit.b0
@@ -79,6 +80,8 @@ extern ERR_STU Error_Stu;
 #define key_pump_sta            Un_Flag0.Bit.b2
 #define flag_rx_head            Un_Flag0.Bit.b3
 #define flag_rx_done            Un_Flag0.Bit.b4
+#define flag_fan_worker         Un_Flag0.Bit.b5
+#define flag_adc_pump           Un_Flag0.Bit.b6
 
 #define flag_fan_sw             Un_Flag1.Bit.b0
 #define flag_power_24v          Un_Flag1.Bit.b1
@@ -88,6 +91,9 @@ extern ERR_STU Error_Stu;
 #define flag_cover_state        Un_Flag1.Bit.b5 //¸Ç°å
 #define flag_adc_ok             Un_Flag1.Bit.b6 
 #define flag_power              Un_Flag1.Bit.b7 //power
+
+#define flag_hydropenia         Un_Flag2.Bit.b0 //È±Ë®
+#define flag_COMP_TYPE          Un_Flag2.Bit.b1 //Ë®±Ã¶ÂËÀ
 
 extern u16 fan_pwm_set;
 extern u8 fan_speed_set;
@@ -106,6 +112,10 @@ extern u8 PowerIN_state;
 extern SW2_STU Sw2Input_Stu;
 extern SW2_STU Sw2LastInput_Stu;
 extern u8 typec_sel;
+extern u16 time_wait;
+extern u8 worker_step;
+extern u8 first_water_pump;
+extern u32 time_pump_water_again;
 
 //void Init_IWDG(void);
 //void R_WDT_Restart(void);
