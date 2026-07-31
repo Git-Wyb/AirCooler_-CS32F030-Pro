@@ -43,25 +43,24 @@ void get_adc_value_deal(void)
         if(CalVal.Sol_Value >= SOL_VALUE_TYPE-30)   Solenoid_state = 1;
         else Solenoid_state = 0;
         
-        if(WATER_PUMP_IDLE_TYPE-23 <= CalVal.Water_Pump && CalVal.Water_Pump <= WATER_PUMP_IDLE_TYPE+20) //10-53
+        if(CalVal.Water_Pump <= WATER_PUMP_IDLE_TYPE) //80
         {
             water_pump_state = 1;
         }
-        else if(WATER_PUMP_NORMAL_TYPE-52 <= CalVal.Water_Pump && CalVal.Water_Pump <= WATER_PUMP_NORMAL_TYPE+30) //53-135
+        else if(WATER_PUMP_IDLE_TYPE < CalVal.Water_Pump && CalVal.Water_Pump <= WATER_PUMP_NORMAL_TYPE) //80-150
         {
             water_pump_state = 2;
             flag_hydropenia = 0;
         }
-        else if(WATER_PUMP_HALF_TYPE-22 <= CalVal.Water_Pump && CalVal.Water_Pump <= WATER_PUMP_HALF_TYPE+30) //135-187
+        else if(WATER_PUMP_NORMAL_TYPE < CalVal.Water_Pump && CalVal.Water_Pump <= WATER_PUMP_HALF_TYPE) //150-200
         {
             water_pump_state = 3;
             flag_hydropenia = 0;
         }
-        else if(WATER_PUMP_COMP_TYPE-23 <= CalVal.Water_Pump)  //187
+        else if(WATER_PUMP_HALF_TYPE < CalVal.Water_Pump)  //>200
         {
             water_pump_state = 4;
         }
-        else water_pump_state = 0;
         
         flag_fan_worker = 1;
         flag_adc_pump = 1;
@@ -110,10 +109,11 @@ void water_pump_worker(void)
                     if(first_water_pump == 0) time_pump = 10000; //60s
                     else time_pump = 10000;
                     first_water_pump = 1;
+                    //Fan_Pwm(D_PWM_MID);
                     SWITCH_PUMP(ON);
                     flag_pump = 1;
                     flag_adc_pump = 0;
-                    time_wait = 1000;
+                    time_wait = 500;
                     worker_step = 2;
                 }
                 break;
@@ -178,6 +178,7 @@ void water_pump_worker(void)
                     time_wait = 0;
                     time_pump = 0;
                     worker_step = 0;
+                    //Fan_Pwm(fan_pwm_set);
                     if(first_water_pump)
                     {
                         time_pump_water_again = TIME_PUMP_WATER_AGAIN;
@@ -193,7 +194,7 @@ void water_pump_worker(void)
                     flag_adc_pump = 0;
                     time_pump = nexttime;
                     worker_step = 4;
-                    time_wait = 1000;
+                    time_wait = 500;
                 }
                 if(time_pump == 0 || flag_level == 1)
                 {
@@ -204,6 +205,7 @@ void water_pump_worker(void)
                     time_wait = 0;
                     //wait_ms(50);
                     SWITCH_SOLEN(OFF);
+                    //Fan_Pwm(fan_pwm_set);
                     worker_step = 0;
                     if(first_water_pump)
                     {
@@ -263,6 +265,7 @@ void water_pump_worker(void)
                     time_pump = 0;
                     time_wait = 0;
                     SWITCH_SOLEN(OFF);
+                    //Fan_Pwm(fan_pwm_set);
                     worker_step = 0;
                     if(first_water_pump)
                     {
@@ -281,7 +284,7 @@ void error_deal(void)
 {
     if(flag_fan_sw == 1)
     {
-        if(Error_Stu.err_cover==1 || Error_Stu.err_24v==1)
+        if(Error_Stu.err_byte != 0)
         {
             flag_fan_sw = 0;
             flag_fan_worker = 0;
@@ -292,14 +295,17 @@ void error_deal(void)
             SWITCH_SOLEN(OFF);
             Fan_Off();
         }
+        //if(first_water_pump == 1 && fan_rpm < 1500) Error_Stu.err_rpm = 1;
     }
     if(PowerIN_state < 2)
     {
         Fan_Off();
+        first_water_pump = 0;
         SWITCH_PUMP(OFF);
         flag_pump = 0;
         time_wait = 0;
         SWITCH_SOLEN(OFF);
+        flag_fan_sw = 0;
         worker_step = 0;
     }
 }

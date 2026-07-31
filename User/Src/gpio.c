@@ -49,7 +49,7 @@ void Init_Gpio(void)
     Sw2LastInput_Stu.low_input = SW2_LOW_INPUT;
     Sw2LastInput_Stu.mid_input = SW2_MID_INPUT;
     Sw2LastInput_Stu.max_input = SW2_MAX_INPUT;
-    //Fan_Air_Set(Sw2LastInput_Stu.sw2_input & 0x07);
+    Fan_Air_Set(Sw2LastInput_Stu.sw2_input & 0x07);
     
     POWER_ON(ON);
     key_power_sta = 1;
@@ -95,6 +95,7 @@ void input_detection(void)
 
 u8 sw2_cnt = 0;
 u8 sw_ms = 0;
+u8 sw2_num = 0;
 void sw2_input_detec(void)
 {
     sw_ms++;
@@ -106,12 +107,13 @@ void sw2_input_detec(void)
         Sw2Input_Stu.max_input = SW2_MAX_INPUT;
         if((Sw2LastInput_Stu.sw2_input & 0x07) != (Sw2Input_Stu.sw2_input & 0x07))
         {
+            sw2_num = 0;
             sw2_cnt++;
             if(sw2_cnt >= 10) //100ms
             {
                 if((Sw2Input_Stu.sw2_input & 0x07) == 0x07)
                 {
-                    if(sw2_cnt >= 50) //300ms
+                    if(sw2_cnt >= 50) //500ms
                     {
                         sw2_cnt = 0;
                         Sw2LastInput_Stu.low_input = Sw2Input_Stu.low_input;
@@ -133,6 +135,15 @@ void sw2_input_detec(void)
         else
         {
             sw2_cnt = 0;
+            if((Sw2LastInput_Stu.sw2_input & 0x07) == (Sw2Input_Stu.sw2_input & 0x07))
+            {
+                sw2_num++;
+                if(sw2_num >= 50)
+                {
+                    sw2_num = 0;
+                    Fan_Air_Set((Sw2Input_Stu.sw2_input & 0x07));
+                }
+            }
         }
     }
 }

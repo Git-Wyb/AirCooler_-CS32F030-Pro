@@ -37,6 +37,8 @@ void Init_Timer6(void)
     __TIM_ENABLE(TIM6);
 }
 
+u8 pump_sta = 0;
+u8 pump_cnt = 0;
 void TIM6_IRQHandler(void)
 {
     if(__TIM_FLAG_STATUS_GET(TIM6,UPDATE) != RESET)
@@ -50,6 +52,40 @@ void TIM6_IRQHandler(void)
         if(time_wait) time_wait--;
         if(time_pump_water_again) time_pump_water_again--;
         input_detection();
+        /*
+        if(flag_pump)
+        {
+            pump_sta++;
+            if(pump_sta >= 10)
+            {
+                pump_sta = 0;
+                pump_cnt++;
+                if(pump_cnt == 1)
+                {
+                    SWITCH_PUMP(ON);
+                }
+                else
+                {
+                    pump_cnt = 0;
+                    SWITCH_PUMP(OFF);
+                }
+            }
+            if(pump_sta <= 6)
+            {
+                SWITCH_PUMP(ON);
+            }
+            else if(pump_sta <= 20)
+            {
+                SWITCH_PUMP(OFF);
+                if(pump_sta == 20) pump_sta = 0;
+            }
+        }
+        else
+        {
+            pump_cnt = 0;
+            pump_sta = 0;
+            SWITCH_PUMP(OFF);
+        }*/
         
         time_300ms++;
         if(time_300ms >= 300)

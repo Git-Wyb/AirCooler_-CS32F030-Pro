@@ -17,9 +17,9 @@
 ÀÆ±√∞Î∂¬£∫157   
 ÀÆ±√∂¬À¿£∫>210
 */
-#define WATER_PUMP_IDLE_TYPE    33
-#define WATER_PUMP_NORMAL_TYPE  105
-#define WATER_PUMP_HALF_TYPE    157
+#define WATER_PUMP_IDLE_TYPE    80
+#define WATER_PUMP_NORMAL_TYPE  150
+#define WATER_PUMP_HALF_TYPE    200
 #define WATER_PUMP_COMP_TYPE    210   
 
 #define TIME_MINUTE             10 //10∑÷÷”

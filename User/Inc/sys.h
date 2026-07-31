@@ -48,7 +48,7 @@ typedef union{
         u8 err_sol   : 1;
         u8 err_pump  : 1;
         u8 err_24v   : 1;
-        u8 b4 : 1;
+        u8 err_rpm   : 1;
         u8 b5 : 1;
         u8 b6 : 1;
         u8 b7 : 1;
