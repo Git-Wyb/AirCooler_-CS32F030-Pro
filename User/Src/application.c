@@ -77,7 +77,16 @@ void AirCooler_Worke(void)
             Fan_Open();
             led_fan(fan_pwm_set);
             time_wait = 2000; //2s
-            worker_step = 1;
+            if(flag_water_last == 1)
+            {
+                flag_water_last = 0;
+                worker_step = 0;
+                time_pump_water_again = time_pump_water_again_last;
+            }
+            else
+            {
+                worker_step = 1;
+            }
         }
     }
     error_deal();
@@ -106,10 +115,9 @@ void water_pump_worker(void)
             case 1:
                 if(time_wait == 0)
                 {
-                    if(first_water_pump == 0) time_pump = 10000; //60s
-                    else time_pump = 10000;
+                    if(first_water_pump == 0) time_pump = TIME_FIRST_PUMP_WATER; //20s
+                    else time_pump = TIME_PUMP_WATER; //10s
                     first_water_pump = 1;
-                    //Fan_Pwm(D_PWM_MID);
                     SWITCH_PUMP(ON);
                     flag_pump = 1;
                     flag_adc_pump = 0;
@@ -136,13 +144,9 @@ void water_pump_worker(void)
                                     SWITCH_PUMP(OFF);
                                     flag_pump = 0;
                                     nexttime = time_pump; 
-                                    if(nexttime > 2000) //More than 3 seconds remaining
-                                    {
-                                        //wait_ms(50);
-                                        SWITCH_SOLEN(ON); //Turn on the solenoid valve to draw water from the water tank
-                                        worker_step = 3;
-                                        time_wait = 500;
-                                    }
+                                    SWITCH_SOLEN(ON); //Next,open the solenoid valve to draw water from the tank.
+                                    worker_step = 3;
+                                    time_wait = 500;
                                 }
                                 break;
                                 
@@ -178,7 +182,6 @@ void water_pump_worker(void)
                     time_wait = 0;
                     time_pump = 0;
                     worker_step = 0;
-                    //Fan_Pwm(fan_pwm_set);
                     if(first_water_pump)
                     {
                         time_pump_water_again = TIME_PUMP_WATER_AGAIN;
@@ -192,7 +195,7 @@ void water_pump_worker(void)
                     SWITCH_PUMP(ON);
                     flag_pump = 1;
                     flag_adc_pump = 0;
-                    time_pump = nexttime;
+                    time_pump = nexttime + 4000; //Add 4 seconds,pump idle time
                     worker_step = 4;
                     time_wait = 500;
                 }
@@ -203,9 +206,7 @@ void water_pump_worker(void)
                     flag_pump = 0;
                     time_pump = 0;
                     time_wait = 0;
-                    //wait_ms(50);
                     SWITCH_SOLEN(OFF);
-                    //Fan_Pwm(fan_pwm_set);
                     worker_step = 0;
                     if(first_water_pump)
                     {
@@ -226,12 +227,12 @@ void water_pump_worker(void)
                             case 1:
                                 pump_comp_cnt = 0;
                                 pump_idle_cnt++;
-                                if(pump_idle_cnt >= 6) //4s
+                                if(pump_idle_cnt >= 6) //3s
                                 {
                                     pump_idle_cnt = 0;
                                     SWITCH_PUMP(OFF);
                                     flag_pump = 0;
-                                    SWITCH_SOLEN(OFF); //Turn on the solenoid valve to draw water from the water tank
+                                    SWITCH_SOLEN(OFF); 
                                     flag_hydropenia = 1; //ȱˮ
                                     first_water_pump = 0;
                                     worker_step = 0;
@@ -265,7 +266,6 @@ void water_pump_worker(void)
                     time_pump = 0;
                     time_wait = 0;
                     SWITCH_SOLEN(OFF);
-                    //Fan_Pwm(fan_pwm_set);
                     worker_step = 0;
                     if(first_water_pump)
                     {
@@ -294,6 +294,11 @@ void error_deal(void)
             time_wait = 0;
             SWITCH_SOLEN(OFF);
             Fan_Off();
+            if(Error_Stu.err_cover == 1)
+            {
+                flag_water_last = 1;
+                time_pump_water_again_last = time_pump_water_again;
+            }
         }
         //if(first_water_pump == 1 && fan_rpm < 1500) Error_Stu.err_rpm = 1;
     }

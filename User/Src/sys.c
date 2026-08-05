@@ -30,6 +30,8 @@ u8 typec_sel = 0;
 u8 worker_step = 0;
 u8 first_water_pump = 0;
 u32 time_pump_water_again = 0;
+u32 time_pump_water_again_last = 0;
+u16 timer_water_floater = 0;
 
 void Init_system_clock(void)
 {

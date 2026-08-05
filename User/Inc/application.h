@@ -23,7 +23,9 @@
 #define WATER_PUMP_COMP_TYPE    210   
 
 #define TIME_MINUTE             10 //10∑÷÷”
-#define TIME_PUMP_WATER_AGAIN   (60 * 1000 * TIME_MINUTE) 
+#define TIME_PUMP_WATER_AGAIN   (60 * 1000 * TIME_MINUTE) //interval time
+#define TIME_FIRST_PUMP_WATER   (1000 * 20) //20s,The first pumping operation after power-on 
+#define TIME_PUMP_WATER         (1000 * 10) //10s,Interval pumping
 
 typedef enum
 {

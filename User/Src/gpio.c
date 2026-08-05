@@ -89,7 +89,19 @@ void input_detection(void)
     //key_fan_detec();    //风量选择
     sw2_input_detec();
     //key_pump_detec();   //水泵开关
-    water_floater_detec();//浮球水位检测 
+    if(flag_pump == 1)
+    {
+        timer_water_floater++;
+        if(timer_water_floater >= 5000)
+        {
+            timer_water_floater = 5000;
+            water_floater_detec();//浮球水位检测 
+        }
+    }
+    else
+    {
+        timer_water_floater = 0;
+    }
     //cover_detec();      //盖板检测
 }
 

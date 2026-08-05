@@ -94,6 +94,7 @@ extern ERR_STU Error_Stu;
 
 #define flag_hydropenia         Un_Flag2.Bit.b0 //È±Ë®
 #define flag_COMP_TYPE          Un_Flag2.Bit.b1 //Ë®±Ã¶ÂËÀ
+#define flag_water_last         Un_Flag2.Bit.b2
 
 extern u16 fan_pwm_set;
 extern u8 fan_speed_set;
@@ -116,6 +117,8 @@ extern u16 time_wait;
 extern u8 worker_step;
 extern u8 first_water_pump;
 extern u32 time_pump_water_again;
+extern u32 time_pump_water_again_last;
+extern u16 timer_water_floater;
 
 //void Init_IWDG(void);
 //void R_WDT_Restart(void);

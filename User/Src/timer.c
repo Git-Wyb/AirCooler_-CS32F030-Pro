@@ -52,6 +52,7 @@ void TIM6_IRQHandler(void)
         if(time_wait) time_wait--;
         if(time_pump_water_again) time_pump_water_again--;
         input_detection();
+         
         /*
         if(flag_pump)
         {
