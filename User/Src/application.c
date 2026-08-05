@@ -77,7 +77,7 @@ void AirCooler_Worke(void)
             Fan_Open();
             led_fan(fan_pwm_set);
             time_wait = 2000; //2s
-            worker_step = 1;
+            //worker_step = 1;
         }
     }
     error_deal();
@@ -94,9 +94,9 @@ void water_pump_worker(void)
         switch(worker_step)
         {
             case 0:
-                time_pump = 0;
-                time_wait = 0;
-                flag_pump = 0;
+                //time_pump = 0;
+                //time_wait = 0;
+                //flag_pump = 0;
                 if(first_water_pump == 1 && time_pump_water_again == 0)
                 {
                     worker_step = 1;

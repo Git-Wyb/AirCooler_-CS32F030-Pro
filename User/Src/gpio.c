@@ -15,20 +15,21 @@ void Init_Gpio(void)
     gpio_mode_set(GPIOA, GPIO_PIN_2, GPIO_MODE_IN_PU);
     gpio_mode_set(GPIOA, GPIO_PIN_3, GPIO_MODE_IN_PU);
     gpio_mode_set(GPIOA, GPIO_PIN_4, GPIO_MODE_IN_PU);
-    //gpio_mode_set(GPIOA, GPIO_PIN_5, GPIO_MODE_IN_PU);
     gpio_mode_set(GPIOF, GPIO_PIN_7, GPIO_MODE_IN_PU); //test pin
+    
+    gpio_mode_set(GPIOA, GPIO_PIN_8, GPIO_MODE_IN_PU);
     
     //OUTPUT
     gpio_mode_set(GPIOA, GPIO_PIN_11, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     gpio_mode_set(GPIOA, GPIO_PIN_12, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
-    gpio_mode_set(GPIOA, GPIO_PIN_8, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
+    //gpio_mode_set(GPIOA, GPIO_PIN_8, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     
     gpio_mode_set(GPIOB, GPIO_PIN_10, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     gpio_mode_set(GPIOB, GPIO_PIN_11, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     gpio_mode_set(GPIOB, GPIO_PIN_12, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     gpio_mode_set(GPIOB, GPIO_PIN_13, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     gpio_mode_set(GPIOB, GPIO_PIN_14, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
-    gpio_mode_set(GPIOB, GPIO_PIN_15, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
+    //gpio_mode_set(GPIOB, GPIO_PIN_15, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     gpio_mode_set(GPIOB, GPIO_PIN_6, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     gpio_mode_set(GPIOB, GPIO_PIN_7, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     
@@ -44,7 +45,7 @@ void Init_Gpio(void)
     SWITCH_PUMP(OFF);
     SWITCH_FAN(OFF);
     
-    LED_POWER(ON);
+    //LED_POWER(ON);
     
     Sw2LastInput_Stu.low_input = SW2_LOW_INPUT;
     Sw2LastInput_Stu.mid_input = SW2_MID_INPUT;
@@ -88,7 +89,7 @@ void input_detection(void)
     //key_switch_power(); //电源按键
     //key_fan_detec();    //风量选择
     sw2_input_detec();
-    //key_pump_detec();   //水泵开关
+    key_pump_detec();   //水泵开关
     water_floater_detec();//浮球水位检测 
     //cover_detec();      //盖板检测
 }
@@ -310,17 +311,19 @@ void user_switch_pump(u8 onoff,u32 utime)
         flag_pump = 0;
         time_pump = 0;
         LED_WATER(OFF);
-        SWITCH_PUMP(OFF);
+        //SWITCH_PUMP(OFF);
+        Pump_Off();
         SWITCH_SOLEN(OFF);
     }
     else
     {
         flag_pump = 1;
         time_pump = utime;
-        SWITCH_PUMP(ON);
-        time_run = 600000 + utime;
-        
         SWITCH_SOLEN(ON);
+        time_run = 600000 + utime;
+        LED_WATER(ON);
+        //SWITCH_PUMP(ON);
+        Pump_Open();
     }
 }
 

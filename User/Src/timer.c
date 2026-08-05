@@ -296,8 +296,50 @@ void TIM3_IRQHandler(void)
     }
 }    
 
-//water flow Hall signal: PA3 -> TIM15_CH2
-void Init_Timer15(void)
+//water pump: PB15 -> TIM15_CH2
+void Init_Timer15(u16 pwm)
 {
+    tim_base_t timer_config_struct;
+    tim_choc_t timer_compare_struct;
+
+    __RCU_APB2_CLK_ENABLE(RCU_APB2_PERI_TIM15); // TIM15 clock enable  (PCLK=16MHZ)
     
+    gpio_mf_config(GPIOB, GPIO_PIN_15, GPIO_MF_SEL1);
+    gpio_mode_set(GPIOB, GPIO_PIN_15, GPIO_MODE_MF_PP_PU(GPIO_SPEED_HIGH));
+    
+    // Time Base configuration
+    timer_config_struct.period = 16000;  //pwm_f=1KHz,clk=16MHz,period = 1/1K * 16M = 16000
+    timer_config_struct.predivider = 0;
+    timer_config_struct.count_mode = TIM_COUNT_PATTERN_UP;
+    timer_config_struct.clk_division = 0;
+    timer_config_struct.repeate_count = 0;
+    tim_base_init(TIM15, &timer_config_struct);
+    
+    // Channel 2 Configuration in PWM mode.
+    timer_compare_struct.mode = TIM_CHxOCMSEL_PWM2;
+    timer_compare_struct.output_state = TIM_CHx_OUTPUT_ENABLE;
+    timer_compare_struct.output_state_n = TIM_CHxNCCEN_ENABLE;
+    timer_compare_struct.polarity = TIM_CHxCCP_POLARITY_LOW;
+    timer_compare_struct.polarity_n = TIM_CHxNCCP_POLARITY_HIGH;
+    timer_compare_struct.idle_state = TIM_IVOx_SET;
+    timer_compare_struct.idle_state_n = TIM_IVOx_RESET;
+    
+    timer_compare_struct.channel = TIM_CHANNEL_2;
+    timer_compare_struct.pulse = pwm;
+    tim_choc_init(TIM15, &timer_compare_struct);
+}
+
+void Pump_Open(void)
+{
+    Init_Timer15(8000); //50%
+    __TIM_ENABLE(TIM15);                 // TIM1 counter enable
+    __TIM_FUNC_ENABLE(TIM15, CH_OUTPUT); // TIM15 PWM Output Enable.
+}
+
+void Pump_Off(void)
+{
+    __TIM_FUNC_DISABLE(TIM15, CH_OUTPUT);
+    __TIM_DISABLE(TIM15);
+    gpio_mode_set(GPIOB, GPIO_PIN_15, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
+    GPIOx_OUT(GPIOB,GPIO_PIN_15,0)
 }
