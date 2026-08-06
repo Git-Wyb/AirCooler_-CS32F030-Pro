@@ -17,6 +17,7 @@ SW2_STU Sw2LastInput_Stu = {0};
 
 u16 time_ms = 0;
 u32 time_pump = 0;
+u32 time_pump_last = 0;
 u32 time_run = 0;
 u32 run_cnt = 0;
 u16 ms_cnt = 0;

@@ -96,11 +96,13 @@ extern ERR_STU Error_Stu;
 #define flag_COMP_TYPE          Un_Flag2.Bit.b1 //Ë®±Ã¶ÂËÀ
 #define flag_water_last         Un_Flag2.Bit.b2
 #define flag_water_tank         Un_Flag2.Bit.b3
+#define flag_pump_last          Un_Flag2.Bit.b4
 
 extern u16 fan_pwm_set;
 extern u8 fan_speed_set;
 extern u16 time_ms;
 extern u32 time_pump;
+extern u32 time_pump_last;
 extern u32 time_run;
 extern u32 run_cnt;
 extern u16 ms_cnt;

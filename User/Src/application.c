@@ -119,6 +119,7 @@ void water_pump_worker(void)
                 if(time_wait == 0)
                 {
                     if(first_water_pump == 0) time_pump = TIME_FIRST_PUMP_WATER; //20s
+                    else if(flag_pump_last == 1) time_pump = time_pump_last;
                     else time_pump = TIME_PUMP_WATER; //10s
                     first_water_pump = 1;
                     SWITCH_PUMP(ON);
@@ -304,8 +305,6 @@ void error_deal(void)
             flag_fan_sw = 0;
             flag_fan_worker = 0;
             worker_step = 0;
-            SWITCH_PUMP(OFF);
-            flag_pump = 0;
             flag_water_tank = 0;
             pump_comp_cnt = 0;
             pump_idle_cnt = 0;
@@ -317,6 +316,13 @@ void error_deal(void)
                 flag_water_last = 1;
                 time_pump_water_again_last = time_pump_water_again;
             }
+            if(flag_pump == 1)
+            {
+                flag_pump_last = 1;
+                time_pump_last = time_pump;
+            }
+            SWITCH_PUMP(OFF);
+            flag_pump = 0;
         }
         //if(first_water_pump == 1 && fan_rpm < 1500) Error_Stu.err_rpm = 1;
     }
