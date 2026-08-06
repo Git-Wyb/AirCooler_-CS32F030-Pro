@@ -95,6 +95,7 @@ extern ERR_STU Error_Stu;
 #define flag_hydropenia         Un_Flag2.Bit.b0 //È±Ë®
 #define flag_COMP_TYPE          Un_Flag2.Bit.b1 //Ë®±Ã¶ÂËÀ
 #define flag_water_last         Un_Flag2.Bit.b2
+#define flag_water_tank         Un_Flag2.Bit.b3
 
 extern u16 fan_pwm_set;
 extern u8 fan_speed_set;

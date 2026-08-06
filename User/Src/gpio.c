@@ -89,19 +89,8 @@ void input_detection(void)
     //key_fan_detec();    //风量选择
     sw2_input_detec();
     //key_pump_detec();   //水泵开关
-    if(flag_pump == 1)
-    {
-        timer_water_floater++;
-        if(timer_water_floater >= 5000)
-        {
-            timer_water_floater = 5000;
-            water_floater_detec();//浮球水位检测 
-        }
-    }
-    else
-    {
-        timer_water_floater = 0;
-    }
+    if(flag_water_tank == 1) water_floater_detec();//浮球水位检测 
+    else flag_level = 0;
     //cover_detec();      //盖板检测
 }
 
@@ -191,6 +180,7 @@ void Fan_Air_Set(u8 airflow)
         default:
             fan_pwm_set = D_PWM_LOW;
             first_water_pump = 0;
+            flag_water_tank = 0;
             SWITCH_PUMP(OFF);
             SWITCH_SOLEN(OFF);
             LED_FAN_LOW(OFF);
@@ -390,6 +380,7 @@ void water_floater_detec(void)
                 }
             }
         }
+        else water_level_ms = 0; 
     }
 }
 

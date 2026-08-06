@@ -51,9 +51,9 @@ void Send_Logo(void)
     if(flag_rx_done == 1)
     {
         flag_rx_done = 0;
-        printf("\r\nSoft Version 0.01\r\n");
+        printf("\r\n2026.08.06,Soft Version 0.03\r\n");
         printf("Fan RPM = %d\r\n",fan_rpm);
-        printf("ADC Cover_Value    = %d\r\n",CalVal.Cover_Value);
+        printf("ADC Cover_Value    = %d(mV)\r\n",CalVal.Cover_Value);
         printf("ADC Water Pump     = %d(mV)\r\n",CalVal.Water_Pump);
         printf("ADC Solenoid valve = %d(mV)\r\n",CalVal.Sol_Value);
         printf("ADC TypeC PowerIN  = %d(mV)\r\n",CalVal.Power_IN);

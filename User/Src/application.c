@@ -106,6 +106,9 @@ void water_pump_worker(void)
                 time_pump = 0;
                 time_wait = 0;
                 flag_pump = 0;
+                flag_water_tank = 0;
+                pump_idle_cnt = 0;
+                pump_comp_cnt = 0;
                 if(first_water_pump == 1 && time_pump_water_again == 0)
                 {
                     worker_step = 1;
@@ -120,6 +123,7 @@ void water_pump_worker(void)
                     first_water_pump = 1;
                     SWITCH_PUMP(ON);
                     flag_pump = 1;
+                    flag_water_tank = 0;
                     flag_adc_pump = 0;
                     time_wait = 500;
                     worker_step = 2;
@@ -143,6 +147,7 @@ void water_pump_worker(void)
                                     pump_idle_cnt = 0;
                                     SWITCH_PUMP(OFF);
                                     flag_pump = 0;
+                                    flag_water_tank = 0;
                                     nexttime = time_pump; 
                                     SWITCH_SOLEN(ON); //Next,open the solenoid valve to draw water from the tank.
                                     worker_step = 3;
@@ -160,6 +165,7 @@ void water_pump_worker(void)
                                     SWITCH_SOLEN(OFF);
                                     time_pump = 0;
                                     flag_pump = 0;
+                                    flag_water_tank = 0;
                                     flag_COMP_TYPE = 1;
                                     time_pump_water_again = 0;
                                     first_water_pump = 0;
@@ -179,6 +185,7 @@ void water_pump_worker(void)
                     SWITCH_PUMP(OFF);
                     SWITCH_SOLEN(OFF);
                     flag_pump = 0;
+                    flag_water_tank = 0;
                     time_wait = 0;
                     time_pump = 0;
                     worker_step = 0;
@@ -193,10 +200,13 @@ void water_pump_worker(void)
                 if(time_wait == 0)
                 {
                     SWITCH_PUMP(ON);
+                    flag_water_tank = 1;
                     flag_pump = 1;
                     flag_adc_pump = 0;
                     time_pump = nexttime + 4000; //Add 4 seconds,pump idle time
                     worker_step = 4;
+                    pump_comp_cnt = 0;
+                    pump_idle_cnt = 0;
                     time_wait = 500;
                 }
                 if(time_pump == 0 || flag_level == 1)
@@ -204,6 +214,7 @@ void water_pump_worker(void)
                     SWITCH_PUMP(OFF);
                     flag_adc_pump = 0;
                     flag_pump = 0;
+                    flag_water_tank = 0;
                     time_pump = 0;
                     time_wait = 0;
                     SWITCH_SOLEN(OFF);
@@ -232,6 +243,7 @@ void water_pump_worker(void)
                                     pump_idle_cnt = 0;
                                     SWITCH_PUMP(OFF);
                                     flag_pump = 0;
+                                    flag_water_tank = 0;
                                     SWITCH_SOLEN(OFF); 
                                     flag_hydropenia = 1; //ȱˮ
                                     first_water_pump = 0;
@@ -243,8 +255,10 @@ void water_pump_worker(void)
                                 pump_comp_cnt++;
                                 if(pump_comp_cnt >= 10)
                                 {
+                                    pump_comp_cnt = 0;
                                     SWITCH_PUMP(OFF);
                                     flag_pump = 0;
+                                    flag_water_tank = 0;
                                     flag_COMP_TYPE = 1;
                                     worker_step = 0;
                                     time_pump_water_again = 0;
@@ -263,6 +277,7 @@ void water_pump_worker(void)
                 {
                     SWITCH_PUMP(OFF);
                     flag_pump = 0;
+                    flag_water_tank = 0;
                     time_pump = 0;
                     time_wait = 0;
                     SWITCH_SOLEN(OFF);
@@ -291,6 +306,9 @@ void error_deal(void)
             worker_step = 0;
             SWITCH_PUMP(OFF);
             flag_pump = 0;
+            flag_water_tank = 0;
+            pump_comp_cnt = 0;
+            pump_idle_cnt = 0;
             time_wait = 0;
             SWITCH_SOLEN(OFF);
             Fan_Off();
@@ -308,6 +326,7 @@ void error_deal(void)
         first_water_pump = 0;
         SWITCH_PUMP(OFF);
         flag_pump = 0;
+        flag_water_tank = 0;
         time_wait = 0;
         SWITCH_SOLEN(OFF);
         flag_fan_sw = 0;
