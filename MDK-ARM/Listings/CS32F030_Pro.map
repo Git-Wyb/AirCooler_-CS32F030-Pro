@@ -1157,7 +1157,7 @@ Image Symbol Table
     type_c_select                            0x080021b9   Thumb Code    86  application.o(i.type_c_select)
     usart_init                               0x08002219   Thumb Code   192  cs32f0xx_usart.o(i.usart_init)
     water_floater_detec                      0x080022e5   Thumb Code   166  gpio.o(i.water_floater_detec)
-    water_pump_worker                        0x08002395   Thumb Code  1230  application.o(i.water_pump_worker)
+    water_pump_worker                        0x08002395   Thumb Code  1232  application.o(i.water_pump_worker)
     Region$$Table$$Base                      0x08002890   Number         0  anon$$obj.o(Region$$Table)
     Region$$Table$$Limit                     0x080028b0   Number         0  anon$$obj.o(Region$$Table)
     fan_pwm_set                              0x20000000   Data           2  sys.o(.data)
@@ -1371,7 +1371,7 @@ Image component sizes
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
        536         74          0          4         14       3156   adc.o
-      2834        340          0          6          0       5644   application.o
+      2834        338          0          6          0       5644   application.o
        232         20          0          0          0       4698   cs32f0xx_adc.o
        156         22          0          0          0       1742   cs32f0xx_dma.o
        266          0          0          0          0       2269   cs32f0xx_gpio.o
@@ -1380,16 +1380,16 @@ Image component sizes
        544         54          0         16          0       4880   cs32f0xx_rcu.o
        514         40          0          0          0       4650   cs32f0xx_tim.o
        204         12          0          0          0       1685   cs32f0xx_usart.o
-      1484        108          0          9          0       6486   gpio.o
-       420        234          0          8          0       5752   main.o
+      1484        108          0          9          0       6526   gpio.o
+       420        234          0          8          0       5824   main.o
         28          8        184          0       1024        636   startup_cs32f030.o
-       244         38          0         54        108       4972   sys.o
+       244         38          0         54        108       5012   sys.o
        252         24          0          0          0        961   system_cs32f0xx.o
       1340        232          0         25          0       4855   timer.o
        384         34          0          2         10       3462   uart.o
 
     ----------------------------------------------------------------------
-      9624       1248        216        132       1160     207369   Object Totals
+      9624       1246        216        132       1160     207521   Object Totals
          0          0         32          0          0          0   (incl. Generated)
         14          0          0          8          4          0   (incl. Padding)
 
@@ -1433,9 +1433,9 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     10200       1276        216        136       1160     205053   Grand Totals
-     10200       1276        216        136       1160     205053   ELF Image Totals
-     10200       1276        216        136          0          0   ROM Totals
+     10200       1274        216        136       1160     205205   Grand Totals
+     10200       1274        216        136       1160     205205   ELF Image Totals
+     10200       1274        216        136          0          0   ROM Totals
 
 ==============================================================================
 

@@ -121,6 +121,7 @@ void water_pump_worker(void)
                     if(first_water_pump == 0) time_pump = TIME_FIRST_PUMP_WATER; //20s
                     else if(flag_pump_last == 1) time_pump = time_pump_last;
                     else time_pump = TIME_PUMP_WATER; //10s
+                    //if(first_water_pump == 0) flag_second_watering = 1;
                     first_water_pump = 1;
                     SWITCH_PUMP(ON);
                     flag_pump = 1;
@@ -247,7 +248,8 @@ void water_pump_worker(void)
                                     flag_water_tank = 0;
                                     SWITCH_SOLEN(OFF); 
                                     flag_hydropenia = 1; //ȱˮ
-                                    first_water_pump = 0;
+                                    //first_water_pump = 0;
+                                    time_pump_water_again = TIME_PUMP_WATER_AGAIN;
                                     worker_step = 0;
                                 }
                                 break;
@@ -286,10 +288,16 @@ void water_pump_worker(void)
                     if(first_water_pump)
                     {
                         time_pump_water_again = TIME_PUMP_WATER_AGAIN;
-                    }
+                    }/*
+                    if(flag_second_watering == 1)
+                    {
+                        flag_second_watering = 0;
+                        time_wait = 500;
+                        worker_step = 1;
+                    }*/
                 }
                 break;
-                       
+                 
             default:
                 break;
         }
