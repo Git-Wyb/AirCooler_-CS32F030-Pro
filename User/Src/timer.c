@@ -180,6 +180,21 @@ void Fan_Off(void)
     fan_rpm = 0;
 }
 
+void Fan_Disbale(void)
+{
+    __TIM_FUNC_DISABLE(TIM1, CH_OUTPUT);
+    __TIM_DISABLE(TIM1);
+    gpio_mode_set(GPIOA, GPIO_PIN_11, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
+    SWITCH_FAN(OFF);
+    read_value1 = 0;
+    read_value2 = 0;
+    capture = 0;
+    t_cycle1 = 0;
+    t_cycle1 = 0;
+    capture_flag = 0;
+    fan_rpm = 0;
+}
+
 void Fan_Pwm(u16 pwm)
 {
     TIM1->CHxCCVAL[TIM_CHANNEL_4] = pwm;

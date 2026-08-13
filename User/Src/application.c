@@ -33,8 +33,9 @@ void get_adc_value_deal(void)
             Error_Stu.err_cover = 1;
         }
         
-        if(CalVal.Power_IN > POWER_IN_15V)     PowerIN_state = 3;
-        else if(CalVal.Power_IN > POWER_IN_9V) PowerIN_state = 2;
+        if(CalVal.Power_IN > POWER_IN_15V)      PowerIN_state = 4;
+        else if(CalVal.Power_IN > POWER_IN_12V) PowerIN_state = 3;
+        else if(CalVal.Power_IN > POWER_IN_9V)  PowerIN_state = 2;
         else PowerIN_state = 1;
 
         //if(CalVal.Power_24V >= Power_24V_TYPE-50) Error_Stu.err_24v = 0;
@@ -150,7 +151,18 @@ void water_pump_worker(void)
                                     SWITCH_PUMP(OFF);
                                     flag_pump = 0;
                                     flag_water_tank = 0;
-                                    nexttime = time_pump; 
+                                    nexttime = time_pump;
+                                    if(PowerIN_state == 2) 
+                                    {
+                                        flag_power_9V = 1;
+                                        Fan_Disbale();     
+                                    }
+                                    else if(PowerIN_state == 3)
+                                    {
+                                        flag_power_12V = 1;
+                                        fan_pwm_set = D_PWM_LOW;
+                                        Fan_Pwm(fan_pwm_set);
+                                    }
                                     SWITCH_SOLEN(ON); //Next,open the solenoid valve to draw water from the tank.
                                     worker_step = 3;
                                     time_wait = 500;
@@ -221,9 +233,15 @@ void water_pump_worker(void)
                     time_wait = 0;
                     SWITCH_SOLEN(OFF);
                     worker_step = 0;
+                    flag_power_12V = 0;
                     if(first_water_pump)
                     {
                         time_pump_water_again = TIME_PUMP_WATER_AGAIN;
+                    }
+                    if(flag_power_9V == 1) 
+                    {
+                        flag_power_9V = 0;
+                        Fan_Open();
                     }
                 }
                 break;
@@ -251,6 +269,12 @@ void water_pump_worker(void)
                                     //first_water_pump = 0;
                                     time_pump_water_again = TIME_PUMP_WATER_AGAIN;
                                     worker_step = 0;
+                                    flag_power_12V = 0;
+                                    if(flag_power_9V == 1)
+                                    {
+                                        flag_power_9V = 0;
+                                        Fan_Open();
+                                    }
                                 }
                                 break;
                             case 4: //Ë®±Ã¶ÂËÀ
@@ -266,6 +290,12 @@ void water_pump_worker(void)
                                     worker_step = 0;
                                     time_pump_water_again = 0;
                                     first_water_pump = 0;
+                                }
+                                flag_power_12V = 0;
+                                if(flag_power_9V == 1) 
+                                {
+                                    flag_power_9V = 0;
+                                    Fan_Open();
                                 }
                                 break;
                                 
@@ -285,16 +315,16 @@ void water_pump_worker(void)
                     time_wait = 0;
                     SWITCH_SOLEN(OFF);
                     worker_step = 0;
+                    flag_power_12V = 0;
                     if(first_water_pump)
                     {
                         time_pump_water_again = TIME_PUMP_WATER_AGAIN;
-                    }/*
-                    if(flag_second_watering == 1)
+                    }
+                    if(flag_power_9V == 1) 
                     {
-                        flag_second_watering = 0;
-                        time_wait = 500;
-                        worker_step = 1;
-                    }*/
+                        flag_power_9V = 0;
+                        Fan_Open();
+                    }
                 }
                 break;
                  
@@ -333,7 +363,7 @@ void error_deal(void)
             flag_pump = 0;
         }
         //if(first_water_pump == 1 && fan_rpm < 1500) Error_Stu.err_rpm = 1;
-    }
+    }/*
     if(PowerIN_state < 2)
     {
         Fan_Off();
@@ -345,7 +375,7 @@ void error_deal(void)
         SWITCH_SOLEN(OFF);
         flag_fan_sw = 0;
         worker_step = 0;
-    }
+    }*/
 }
 
 u8 Power_supply_detection(void)

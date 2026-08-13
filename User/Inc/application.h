@@ -3,12 +3,11 @@
 #include "sys.h"
 
 #define SOL_VALUE_TYPE   232
-#define POWER_IN_TYPE    1925
-#define Power_24V_TYPE   2100
-#define POWER_IN_20V     1700
-#define POWER_IN_15V     1400
-#define POWER_IN_12V     1000
-#define POWER_IN_9V      700
+#define Power_24V_TYPE   1925//2100 //AD 2187
+#define POWER_IN_20V     1700//1900 //AD 1828
+#define POWER_IN_15V     1590//18V
+#define POWER_IN_12V     1000//11.0V
+#define POWER_IN_9V       760//8.5V
 
 /*
 ²»¹¤×÷£º0mv

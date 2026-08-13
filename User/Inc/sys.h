@@ -98,6 +98,8 @@ extern ERR_STU Error_Stu;
 #define flag_water_tank         Un_Flag2.Bit.b3
 #define flag_pump_last          Un_Flag2.Bit.b4
 #define flag_second_watering    Un_Flag2.Bit.b5
+#define flag_power_9V           Un_Flag2.Bit.b6
+#define flag_power_12V          Un_Flag2.Bit.b7
 
 extern u16 fan_pwm_set;
 extern u8 fan_speed_set;

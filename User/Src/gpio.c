@@ -151,18 +151,27 @@ void sw2_input_detec(void)
 
 void Fan_Air_Set(u8 airflow)
 {
-    if(PowerIN_state == 2) 
+    if(PowerIN_state == 3) 
     {
         if(airflow < 0x05) airflow = 0x05;
     }
+    else if(PowerIN_state == 2)
+    {
+        if(airflow < 0x06) airflow = 0x06;
+    }
     else if(PowerIN_state == 1) airflow = 0;
     
+    if(flag_power_12V == 1)
+    {
+        if(airflow < 0x06) airflow = 0x06; 
+    }
+        
     switch(airflow)
     {
         case 0x06:
             fan_pwm_set = D_PWM_LOW;
             Fan_Pwm(fan_pwm_set);
-            led_fan(fan_pwm_set);
+            if(flag_power_12V == 0) led_fan(fan_pwm_set);
             break;
         
         case 0x05:
@@ -188,6 +197,8 @@ void Fan_Air_Set(u8 airflow)
             LED_FAN_MAX(OFF);
             Fan_Off();
             POWER_ON(OFF);
+            flag_power_12V = 0;
+            flag_power_9V = 0;
             break;
     }
 }
