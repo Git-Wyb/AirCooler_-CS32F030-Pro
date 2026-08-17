@@ -51,7 +51,7 @@ void Send_Logo(void)
     if(flag_rx_done == 1)
     {
         flag_rx_done = 0;
-        printf("\r\n2026.08.13,Soft Version 0.06\r\n");
+        printf("\r\n2026.08.14,Soft Version 0.07\r\n");
         printf("Fan RPM = %d\r\n",fan_rpm);
         printf("ADC Cover_Value    = %d(mV)\r\n",CalVal.Cover_Value);
         printf("ADC Water Pump     = %d(mV)\r\n",CalVal.Water_Pump);

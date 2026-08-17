@@ -540,7 +540,7 @@ Removing Unused input sections from the image.
     Removing gpio.o(.revsh_text), (4 bytes).
     Removing gpio.o(i.auto_test), (144 bytes).
     Removing gpio.o(i.cover_detec), (188 bytes).
-    Removing gpio.o(i.key_fan_detec), (288 bytes).
+    Removing gpio.o(i.key_fan_detec), (292 bytes).
     Removing gpio.o(i.key_pump_detec), (168 bytes).
     Removing gpio.o(i.key_switch_power), (204 bytes).
     Removing gpio.o(i.pump_wait_off), (48 bytes).
@@ -769,7 +769,7 @@ Removing Unused input sections from the image.
     Removing depilogue.o(.text), (190 bytes).
     Removing depilogue.o(i.__ARM_clz), (46 bytes).
 
-242 unused section(s) (total 11042 bytes) removed from the image.
+242 unused section(s) (total 11046 bytes) removed from the image.
 
 ==============================================================================
 
