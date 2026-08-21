@@ -34,7 +34,7 @@ int main(void)
     Init_Uart1();
     Init_Timer3();
     Init_ADC1();
-    time_ms = 100;
+    time_ms = 500;
     while(Power_supply_detection()) FWDT_Clear();
     while (1)
     {
@@ -51,7 +51,7 @@ void Send_Logo(void)
     if(flag_rx_done == 1)
     {
         flag_rx_done = 0;
-        printf("\r\n2026.08.14,Soft Version 0.07\r\n");
+        printf("\r\n2026.08.21,Soft Version 0.08\r\n");
         printf("Fan RPM = %d\r\n",fan_rpm);
         printf("ADC Cover_Value    = %d(mV)\r\n",CalVal.Cover_Value);
         printf("ADC Water Pump     = %d(mV)\r\n",CalVal.Water_Pump);

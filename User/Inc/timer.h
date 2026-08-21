@@ -4,9 +4,9 @@
 #include "sys.h"
 #include "gpio.h"
 
-#define D_PWM_MAX 192//70%   //0  //100%
-#define D_PWM_MID 288//55%   //160  //75%
-#define D_PWM_LOW 384//40%   //320  //50%
+#define D_PWM_MAX  192 //70%  //192//70%   //0  //100%
+#define D_PWM_MID  352 //45%  //288//55%   //160  //75%
+#define D_PWM_LOW  409 //30%  //384//40%   //320  //50%
 
 #define COEFFICIENT 10000
 
@@ -25,6 +25,8 @@ void Fan_Disbale(void);
 
 
 /* 兄弟: LOW 6.5, MID 9, MAX 10.7
+风机进风口遮挡一半
+PWM    m/s
 420    6.0
 320    8.6
 240    9.8
@@ -36,5 +38,11 @@ void Fan_Disbale(void);
 384    6.9
 288    9.2
 192    10.8
+
+风机进风口无遮挡
+409    8.4
+352    10.5
+192    14.3
+
 */
 

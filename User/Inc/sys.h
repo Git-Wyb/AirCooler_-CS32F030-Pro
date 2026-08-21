@@ -44,12 +44,12 @@ typedef union{
     u8 err_byte;
     struct
     {
-        u8 err_cover : 1;
-        u8 err_sol   : 1;
-        u8 err_pump  : 1;
-        u8 err_24v   : 1;
-        u8 err_rpm   : 1;
-        u8 b5 : 1;
+        u8 err_cover  : 1;
+        u8 err_sol    : 1;
+        u8 err_24v    : 1;
+        u8 err_rpm    : 1;
+        u8 err_floater : 1;
+        u8 err_pump_abnormal : 1;
         u8 b6 : 1;
         u8 b7 : 1;
     };
@@ -93,13 +93,11 @@ extern ERR_STU Error_Stu;
 #define flag_power              Un_Flag1.Bit.b7 //power
 
 #define flag_hydropenia         Un_Flag2.Bit.b0 //È±Ë®
-#define flag_COMP_TYPE          Un_Flag2.Bit.b1 //Ë®±Ã¶ÂËÀ
-#define flag_water_last         Un_Flag2.Bit.b2
-#define flag_water_tank         Un_Flag2.Bit.b3
-#define flag_pump_last          Un_Flag2.Bit.b4
-#define flag_second_watering    Un_Flag2.Bit.b5
-#define flag_power_9V           Un_Flag2.Bit.b6
-#define flag_power_12V          Un_Flag2.Bit.b7
+#define flag_water_last         Un_Flag2.Bit.b1
+#define flag_water_tank         Un_Flag2.Bit.b2
+#define flag_pump_last          Un_Flag2.Bit.b3
+#define flag_power_9V           Un_Flag2.Bit.b4
+#define flag_power_12V          Un_Flag2.Bit.b5
 
 extern u16 fan_pwm_set;
 extern u8 fan_speed_set;
@@ -124,13 +122,7 @@ extern u8 worker_step;
 extern u8 first_water_pump;
 extern u32 time_pump_water_again;
 extern u32 time_pump_water_again_last;
-extern u16 timer_water_floater;
-
-//void Init_IWDG(void);
-//void R_WDT_Restart(void);
-//void Init_Delay(void);
-//void delay_us(u32 nus);
-//void delay_ms(u16 nms);
+extern u32 time_poweron_step;
 
 void Init_FWDT(void);
 void FWDT_Clear(void);

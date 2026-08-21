@@ -21,7 +21,7 @@ void Init_Gpio(void)
     //OUTPUT
     gpio_mode_set(GPIOA, GPIO_PIN_11, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     gpio_mode_set(GPIOA, GPIO_PIN_12, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
-    gpio_mode_set(GPIOA, GPIO_PIN_8, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
+    //gpio_mode_set(GPIOA, GPIO_PIN_8, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     
     gpio_mode_set(GPIOB, GPIO_PIN_10, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
     gpio_mode_set(GPIOB, GPIO_PIN_11, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
@@ -43,8 +43,6 @@ void Init_Gpio(void)
     LED_ABNORMAL(OFF);
     SWITCH_PUMP(OFF);
     SWITCH_FAN(OFF);
-    
-    LED_POWER(ON);
     
     Sw2LastInput_Stu.low_input = SW2_LOW_INPUT;
     Sw2LastInput_Stu.mid_input = SW2_MID_INPUT;
@@ -89,8 +87,7 @@ void input_detection(void)
     //key_fan_detec();    //风量选择
     sw2_input_detec();
     //key_pump_detec();   //水泵开关
-    if(flag_water_tank == 1) water_floater_detec();//浮球水位检测 
-    else flag_level = 0;
+    water_floater_detec();//浮球水位检测 
     //cover_detec();      //盖板检测
 }
 
@@ -165,7 +162,7 @@ void Fan_Air_Set(u8 airflow)
     {
         if(airflow < 0x06) airflow = 0x06; 
     }
-        
+
     switch(airflow)
     {
         case 0x06:
@@ -176,13 +173,16 @@ void Fan_Air_Set(u8 airflow)
         
         case 0x05:
             fan_pwm_set = D_PWM_MID;
-            Fan_Pwm(fan_pwm_set);
+            if(time_poweron_step > 10000) Fan_Pwm(D_PWM_LOW);
+            else Fan_Pwm(fan_pwm_set);
             led_fan(fan_pwm_set);
             break;
     
         case 0x03:
             fan_pwm_set = D_PWM_MAX;
-            Fan_Pwm(fan_pwm_set);
+            if(time_poweron_step > 10000) Fan_Pwm(D_PWM_LOW);
+            else if(time_poweron_step > 0) Fan_Pwm(D_PWM_MID);
+            else Fan_Pwm(fan_pwm_set); 
             led_fan(fan_pwm_set);
             break;
         
@@ -219,13 +219,11 @@ void key_switch_power(void)
                 {
                     flag_power = 0;
                     POWER_ON(OFF);
-                    LED_POWER(OFF);
                 }
                 else
                 {
                     flag_power = 1;
                     POWER_ON(ON);
-                    LED_POWER(ON);
                 }
             }
         }
@@ -372,7 +370,6 @@ void water_floater_detec(void)
             if(WATER_LEVEL_DETEC == 0)
             {
                 flag_level = 0;
-                //LED_WATER(ON);
             }
         }
     }
@@ -387,7 +384,6 @@ void water_floater_detec(void)
                 if(WATER_LEVEL_DETEC == 1)
                 {
                     flag_level = 1;
-                    //LED_WATER(OFF);
                 }
             }
         }

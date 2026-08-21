@@ -198,7 +198,17 @@
         <Ww>
           <count>8</count>
           <WinNumber>1</WinNumber>
+          <ItemText>time_poweron_step,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>9</count>
+          <WinNumber>1</WinNumber>
           <ItemText>flag_level</ItemText>
+        </Ww>
+        <Ww>
+          <count>10</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>flag_hydropenia</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

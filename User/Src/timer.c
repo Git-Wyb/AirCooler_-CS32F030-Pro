@@ -51,6 +51,7 @@ void TIM6_IRQHandler(void)
         if(ms_cnt)  ms_cnt--;
         if(time_wait) time_wait--;
         if(time_pump_water_again) time_pump_water_again--;
+        if(time_poweron_step) time_poweron_step--;
         input_detection();
         
         time_300ms++;
@@ -79,7 +80,7 @@ void TIM6_IRQHandler(void)
                 si = 0;
             }
             
-            if(flag_COMP_TYPE == 1 || Error_Stu.err_byte != 0)
+            if(Error_Stu.err_cover != 0)
             {
                 sk++;
                 if(sk == 1) 

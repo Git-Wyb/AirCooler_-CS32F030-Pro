@@ -16,15 +16,15 @@
 ÀÆ±√∞Î∂¬£∫157   
 ÀÆ±√∂¬À¿£∫>210
 */
-#define WATER_PUMP_IDLE_TYPE    80
+#define WATER_PUMP_IDLE_TYPE    60
 #define WATER_PUMP_NORMAL_TYPE  150
 #define WATER_PUMP_HALF_TYPE    200
 #define WATER_PUMP_COMP_TYPE    210   
 
-#define TIME_MINUTE             10 //10∑÷÷”
+#define TIME_MINUTE             5 //10∑÷÷”
 #define TIME_PUMP_WATER_AGAIN   (60 * 1000 * TIME_MINUTE) //interval time
-#define TIME_FIRST_PUMP_WATER   (1000 * 15) //15s,The first pumping operation after power-on 
-#define TIME_PUMP_WATER         (1000 * 10) //10s,Interval pumping
+#define TIME_FIRST_PUMP_WATER   (1000 * 33) //33s,The first pumping operation after power-on 
+#define TIME_PUMP_WATER         (1000 * 5) //5s,Interval pumping
 #define TIME_WAIT_AGAIN         (60 * 1000 * 5)//5 minute,Once again, draw water from the water tank
 
 typedef enum

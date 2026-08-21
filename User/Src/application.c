@@ -119,17 +119,41 @@ void water_pump_worker(void)
             case 1:
                 if(time_wait == 0)
                 {
-                    if(first_water_pump == 0) time_pump = TIME_FIRST_PUMP_WATER; //20s
+                    if(first_water_pump == 0) 
+                    {
+                        if(flag_level == 0) time_pump = TIME_FIRST_PUMP_WATER; //33s
+                        else time_pump = (1000 * 20); //20s
+                        time_poweron_step = time_pump + (1000 * 15);
+                    }
                     else if(flag_pump_last == 1) time_pump = time_pump_last;
-                    else time_pump = TIME_PUMP_WATER; //10s
-                    //if(first_water_pump == 0) flag_second_watering = 1;
+                    else time_pump = TIME_PUMP_WATER; //5s
+
                     first_water_pump = 1;
-                    SWITCH_PUMP(ON);
-                    flag_pump = 1;
+                    if(flag_level == 0) //Draw water from the tank
+                    {
+                        if(PowerIN_state == 2) 
+                        {
+                            flag_power_9V = 1;
+                            Fan_Disbale();     
+                        }
+                        else if(PowerIN_state == 3)
+                        {
+                            flag_power_12V = 1;
+                            fan_pwm_set = D_PWM_LOW;
+                            Fan_Pwm(fan_pwm_set);
+                        }
+                        SWITCH_SOLEN(ON);
+                        worker_step = 3;
+                    }
+                    else //Take water from the sink
+                    {
+                        SWITCH_PUMP(ON);
+                        flag_pump = 1;
+                        worker_step = 2;
+                    }
                     flag_water_tank = 0;
                     flag_adc_pump = 0;
                     time_wait = 500;
-                    worker_step = 2;
                 }
                 break;
             
@@ -147,11 +171,13 @@ void water_pump_worker(void)
                                 pump_idle_cnt++;
                                 if(pump_idle_cnt >= 6) //3s
                                 {
+                                    if(flag_level == 0) Error_Stu.err_floater = 0;
+                                    else Error_Stu.err_floater = 1;
                                     pump_idle_cnt = 0;
                                     SWITCH_PUMP(OFF);
                                     flag_pump = 0;
                                     flag_water_tank = 0;
-                                    nexttime = time_pump;
+                                    time_pump = time_pump + 4500; //Add 4.5 seconds,pump idle time
                                     if(PowerIN_state == 2) 
                                     {
                                         flag_power_9V = 1;
@@ -180,7 +206,7 @@ void water_pump_worker(void)
                                     time_pump = 0;
                                     flag_pump = 0;
                                     flag_water_tank = 0;
-                                    flag_COMP_TYPE = 1;
+                                    Error_Stu.err_pump_abnormal = 1;
                                     time_pump_water_again = 0;
                                     first_water_pump = 0;
                                     worker_step = 0;
@@ -194,7 +220,7 @@ void water_pump_worker(void)
                         }
                     }
                 }
-                if(time_pump == 0 || flag_level == 1)
+                if(time_pump == 0)//|| flag_level == 1)
                 {
                     SWITCH_PUMP(OFF);
                     SWITCH_SOLEN(OFF);
@@ -217,32 +243,10 @@ void water_pump_worker(void)
                     flag_water_tank = 1;
                     flag_pump = 1;
                     flag_adc_pump = 0;
-                    time_pump = nexttime + 4000; //Add 4 seconds,pump idle time
-                    worker_step = 4;
                     pump_comp_cnt = 0;
                     pump_idle_cnt = 0;
                     time_wait = 500;
-                }
-                if(time_pump == 0 || flag_level == 1)
-                {
-                    SWITCH_PUMP(OFF);
-                    flag_adc_pump = 0;
-                    flag_pump = 0;
-                    flag_water_tank = 0;
-                    time_pump = 0;
-                    time_wait = 0;
-                    SWITCH_SOLEN(OFF);
-                    worker_step = 0;
-                    flag_power_12V = 0;
-                    if(first_water_pump)
-                    {
-                        time_pump_water_again = TIME_PUMP_WATER_AGAIN;
-                    }
-                    if(flag_power_9V == 1) 
-                    {
-                        flag_power_9V = 0;
-                        Fan_Open();
-                    }
+                    worker_step = 4;
                 }
                 break;
                 
@@ -266,7 +270,6 @@ void water_pump_worker(void)
                                     flag_water_tank = 0;
                                     SWITCH_SOLEN(OFF); 
                                     flag_hydropenia = 1; //ȱˮ
-                                    //first_water_pump = 0;
                                     time_pump_water_again = TIME_PUMP_WATER_AGAIN;
                                     worker_step = 0;
                                     flag_power_12V = 0;
@@ -286,7 +289,7 @@ void water_pump_worker(void)
                                     SWITCH_PUMP(OFF);
                                     flag_pump = 0;
                                     flag_water_tank = 0;
-                                    flag_COMP_TYPE = 1;
+                                    Error_Stu.err_pump_abnormal = 1;
                                     worker_step = 0;
                                     time_pump_water_again = 0;
                                     first_water_pump = 0;
@@ -338,7 +341,7 @@ void error_deal(void)
 {
     if(flag_fan_sw == 1)
     {
-        if(Error_Stu.err_byte != 0)
+        if(Error_Stu.err_cover != 0)
         {
             flag_fan_sw = 0;
             flag_fan_worker = 0;
@@ -384,7 +387,7 @@ u8 Power_supply_detection(void)
     if(flag_adc_ok && time_ms == 0)
     {
         flag_adc_ok = 0;
-        time_ms = 100;
+        time_ms = 500;
         Adc_Val.Power_IN   = bubble_sort_average_value(&Adc_Value_Buff[PowerIN_Index][0],7);
         Adc_Val.Refint_IN  = bubble_sort_average_value(&Adc_Value_Buff[RefintIN_Index][0],7);
         Vref_Cal = (3300 * VREFINT_CAL) / (Adc_Val.Refint_IN); //3300mV  //4999

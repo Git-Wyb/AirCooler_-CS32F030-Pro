@@ -22,16 +22,16 @@
 #define SW2_MAX_INPUT       GPIOx_IN(GPIOA,GPIO_PIN_2)
 
 //OUTPUT
-#define LED_WATER(x)        GPIOx_OUT(GPIOB,GPIO_PIN_15,x)
+#define LED_WATER(x)        GPIOx_OUT(GPIOB,GPIO_PIN_10,x)
 #define LED_FAN_MAX(x)      GPIOx_OUT(GPIOB,GPIO_PIN_14,x)
 #define LED_FAN_MID(x)      GPIOx_OUT(GPIOB,GPIO_PIN_13,x)
 #define LED_FAN_LOW(x)      GPIOx_OUT(GPIOB,GPIO_PIN_12,x)
 #define LED_ABNORMAL(x)     GPIOx_OUT(GPIOB,GPIO_PIN_11,x)
-#define LED_POWER(x)        GPIOx_OUT(GPIOB,GPIO_PIN_10,x) 
+//#define LED_POWER(x)        GPIOx_OUT(GPIOB,GPIO_PIN_10,x) 
 #define CH224A_CFG2(x)      GPIOx_OUT(GPIOB,GPIO_PIN_7,x)
 #define CH224A_CFG3(x)      GPIOx_OUT(GPIOB,GPIO_PIN_6,x)
 #define POWER_ON(x)         GPIOx_OUT(GPIOC,GPIO_PIN_13,x)
-#define SWITCH_PUMP(x)      GPIOx_OUT(GPIOA,GPIO_PIN_8,x)
+#define SWITCH_PUMP(x)      GPIOx_OUT(GPIOB,GPIO_PIN_15,x)
 #define SWITCH_FAN(x)       FAN_GPIOx_OUT(GPIOA,GPIO_PIN_11,x)
 #define SWITCH_SOLEN(x)     GPIOx_OUT(GPIOA,GPIO_PIN_12,x)
 
