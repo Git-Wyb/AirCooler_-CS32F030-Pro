@@ -98,6 +98,7 @@ extern ERR_STU Error_Stu;
 #define flag_pump_last          Un_Flag2.Bit.b3
 #define flag_power_9V           Un_Flag2.Bit.b4
 #define flag_power_12V          Un_Flag2.Bit.b5
+#define flag_power_off          Un_Flag2.Bit.b6
 
 extern u16 fan_pwm_set;
 extern u8 fan_speed_set;
@@ -123,6 +124,7 @@ extern u8 first_water_pump;
 extern u32 time_pump_water_again;
 extern u32 time_pump_water_again_last;
 extern u32 time_poweron_step;
+extern u16 time_power_off;
 
 void Init_FWDT(void);
 void FWDT_Clear(void);

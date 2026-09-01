@@ -41,7 +41,22 @@ int main(void)
         FWDT_Clear();
         adc_dma_value();
         get_adc_value_deal();
-        AirCooler_Worke();
+        if(flag_power_off == 0) AirCooler_Worke();
+        if(time_power_off == 0) //power off
+        {
+            fan_pwm_set = D_PWM_LOW;
+            first_water_pump = 0;
+            flag_water_tank = 0;
+            SWITCH_PUMP(OFF);
+            SWITCH_SOLEN(OFF);
+            LED_FAN_LOW(OFF);
+            LED_FAN_MID(OFF);
+            LED_FAN_MAX(OFF);
+            Fan_Off();
+            flag_power_12V = 0;
+            flag_power_9V = 0;
+            POWER_ON(OFF);
+        }
         Send_Logo();
     }
 }
