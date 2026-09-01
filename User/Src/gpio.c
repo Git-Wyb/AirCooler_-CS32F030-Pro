@@ -173,16 +173,18 @@ void Fan_Air_Set(u8 airflow)
         
         case 0x05:
             fan_pwm_set = D_PWM_MID;
-            if(time_poweron_step > 10000) Fan_Pwm(D_PWM_LOW);
-            else Fan_Pwm(fan_pwm_set);
+            //if(time_poweron_step > 10000) Fan_Pwm(D_PWM_LOW);
+            //else 
+            Fan_Pwm(fan_pwm_set);
             led_fan(fan_pwm_set);
             break;
     
         case 0x03:
             fan_pwm_set = D_PWM_MAX;
-            if(time_poweron_step > 10000) Fan_Pwm(D_PWM_LOW);
-            else if(time_poweron_step > 0) Fan_Pwm(D_PWM_MID);
-            else Fan_Pwm(fan_pwm_set); 
+            //if(time_poweron_step > 10000) Fan_Pwm(D_PWM_LOW);
+            //else if(time_poweron_step > 0) Fan_Pwm(D_PWM_MID);
+            //else 
+            Fan_Pwm(fan_pwm_set); 
             led_fan(fan_pwm_set);
             break;
         

@@ -122,7 +122,7 @@ void water_pump_worker(void)
                     if(first_water_pump == 0) 
                     {
                         if(flag_level == 0) time_pump = TIME_FIRST_PUMP_WATER; //33s
-                        else time_pump = (1000 * 20); //20s
+                        else time_pump = (1000 * 15); //15s
                         time_poweron_step = time_pump + (1000 * 15);
                     }
                     else if(flag_pump_last == 1) time_pump = time_pump_last;
@@ -309,7 +309,7 @@ void water_pump_worker(void)
                         }
                     }
                 }
-                if(time_pump == 0 || flag_level == 1)
+                if(time_pump == 0)// || flag_level == 1)
                 {
                     SWITCH_PUMP(OFF);
                     flag_pump = 0;
