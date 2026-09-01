@@ -41,7 +41,22 @@ int main(void)
         FWDT_Clear();
         adc_dma_value();
         get_adc_value_deal();
-        AirCooler_Worke();
+        if(flag_power_off == 0) AirCooler_Worke();
+        if(time_power_off == 0) //power off
+        {
+            fan_pwm_set = D_PWM_LOW;
+            first_water_pump = 0;
+            flag_water_tank = 0;
+            SWITCH_PUMP(OFF);
+            SWITCH_SOLEN(OFF);
+            LED_FAN_LOW(OFF);
+            LED_FAN_MID(OFF);
+            LED_FAN_MAX(OFF);
+            Fan_Off();
+            flag_power_12V = 0;
+            flag_power_9V = 0;
+            POWER_ON(OFF);
+        }
         Send_Logo();
     }
 }
@@ -51,7 +66,7 @@ void Send_Logo(void)
     if(flag_rx_done == 1)
     {
         flag_rx_done = 0;
-        printf("\r\n2026.08.21,Soft Version 0.08\r\n");
+        printf("\r\n2026.09.01,Soft Version V0.09\r\n");
         printf("Fan RPM = %d\r\n",fan_rpm);
         printf("ADC Cover_Value    = %d(mV)\r\n",CalVal.Cover_Value);
         printf("ADC Water Pump     = %d(mV)\r\n",CalVal.Water_Pump);

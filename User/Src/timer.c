@@ -12,6 +12,7 @@ u8 capture_flag = 0;
 u16 time_300ms = 0;
 u32 fan_rpm = 0;
 u8 si = 0,sk = 0;
+
 void Init_Timer6(void)
 {
     tim_base_t timer_config_struct;
@@ -46,18 +47,24 @@ void TIM6_IRQHandler(void)
         __TIM_FLAG_CLEAR(TIM6,TIM_FLAG_UPDATE);
         
         if(time_ms) time_ms--;
-        if(time_pump) time_pump--;
         if(time_run)  time_run--;
         if(ms_cnt)  ms_cnt--;
-        if(time_wait) time_wait--;
-        if(time_pump_water_again) time_pump_water_again--;
-        if(time_poweron_step) time_poweron_step--;
+        if(flag_power_off == 0)
+        {
+            if(time_pump_water_again) time_pump_water_again--;
+            if(time_poweron_step) time_poweron_step--;
+            if(time_wait) time_wait--;
+            if(time_pump) time_pump--;
+        }
         input_detection();
         
         time_300ms++;
         if(time_300ms >= 300)
         {
             time_300ms = 0;
+            if(flag_power_off == 1) time_power_off--;
+            else time_power_off = 100;
+            
             if(flag_hydropenia == 1)
             {
                 si++;

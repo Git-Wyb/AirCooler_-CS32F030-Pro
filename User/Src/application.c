@@ -97,6 +97,7 @@ void AirCooler_Worke(void)
 u32 nexttime = 0;
 u8 pump_idle_cnt = 0;
 u8 pump_comp_cnt = 0;
+u8 poweron_pump_cnt = 0;
 void water_pump_worker(void)
 {
     if(flag_fan_sw)
@@ -121,13 +122,14 @@ void water_pump_worker(void)
                 {
                     if(first_water_pump == 0) 
                     {
-                        if(flag_level == 0) time_pump = TIME_FIRST_PUMP_WATER; //33s
-                        else time_pump = (1000 * 20); //20s
-                        time_poweron_step = time_pump + (1000 * 15);
+                        if(flag_level == 0) time_pump = TIME_FIRST_PUMP_WATER; //5s
+                        else time_pump = (1000 * 5); //s
+                        //time_poweron_step = time_pump + (1000 * 15);
                     }
                     else if(flag_pump_last == 1) time_pump = time_pump_last;
                     else time_pump = TIME_PUMP_WATER; //5s
-
+                    if(poweron_pump_cnt < 6) poweron_pump_cnt++;
+                    
                     first_water_pump = 1;
                     if(flag_level == 0) //Draw water from the tank
                     {
@@ -231,7 +233,8 @@ void water_pump_worker(void)
                     worker_step = 0;
                     if(first_water_pump)
                     {
-                        time_pump_water_again = TIME_PUMP_WATER_AGAIN;
+                        if(poweron_pump_cnt < 6) time_pump_water_again = (1000 * 15); //15s
+                        else time_pump_water_again = TIME_PUMP_WATER_AGAIN;
                     }
                 }
                 break;
@@ -309,7 +312,7 @@ void water_pump_worker(void)
                         }
                     }
                 }
-                if(time_pump == 0 || flag_level == 1)
+                if(time_pump == 0)// || flag_level == 1)
                 {
                     SWITCH_PUMP(OFF);
                     flag_pump = 0;
@@ -321,7 +324,8 @@ void water_pump_worker(void)
                     flag_power_12V = 0;
                     if(first_water_pump)
                     {
-                        time_pump_water_again = TIME_PUMP_WATER_AGAIN;
+                        if(poweron_pump_cnt < 6) time_pump_water_again = (1000 * 15); //15s
+                        else time_pump_water_again = TIME_PUMP_WATER_AGAIN;
                     }
                     if(flag_power_9V == 1) 
                     {

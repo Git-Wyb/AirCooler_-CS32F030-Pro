@@ -23,7 +23,7 @@
 
 #define TIME_MINUTE             5 //10∑÷÷”
 #define TIME_PUMP_WATER_AGAIN   (60 * 1000 * TIME_MINUTE) //interval time
-#define TIME_FIRST_PUMP_WATER   (1000 * 33) //33s,The first pumping operation after power-on 
+#define TIME_FIRST_PUMP_WATER   (1000 * 5) //5s,The first pumping operation after power-on 
 #define TIME_PUMP_WATER         (1000 * 5) //5s,Interval pumping
 #define TIME_WAIT_AGAIN         (60 * 1000 * 5)//5 minute,Once again, draw water from the water tank
 

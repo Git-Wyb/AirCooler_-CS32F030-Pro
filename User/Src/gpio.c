@@ -47,7 +47,7 @@ void Init_Gpio(void)
     Sw2LastInput_Stu.low_input = SW2_LOW_INPUT;
     Sw2LastInput_Stu.mid_input = SW2_MID_INPUT;
     Sw2LastInput_Stu.max_input = SW2_MAX_INPUT;
-    Fan_Air_Set(Sw2LastInput_Stu.sw2_input & 0x07);
+    //Fan_Air_Set(Sw2LastInput_Stu.sw2_input & 0x07);
     
     POWER_ON(ON);
     key_power_sta = 1;
@@ -91,7 +91,7 @@ void input_detection(void)
     //cover_detec();      //¸Ç°å¼ì²â
 }
 
-u8 sw2_cnt = 0;
+u16 sw2_cnt = 0;
 u8 sw_ms = 0;
 u8 sw2_num = 0;
 void sw2_input_detec(void)
@@ -107,11 +107,17 @@ void sw2_input_detec(void)
         {
             sw2_num = 0;
             sw2_cnt++;
-            if(sw2_cnt >= 10) //100ms
+            if(sw2_cnt >= 15) //100ms
             {
                 if((Sw2Input_Stu.sw2_input & 0x07) == 0x07)
                 {
-                    if(sw2_cnt >= 50) //500ms
+                    if(sw2_cnt >= 50) //100ms
+                    {
+                        LED_FAN_LOW(OFF);
+                        LED_FAN_MID(OFF);
+                        LED_FAN_MAX(OFF);
+                    }
+                    if(sw2_cnt >= 500) //5s
                     {
                         sw2_cnt = 0;
                         Sw2LastInput_Stu.low_input = Sw2Input_Stu.low_input;
@@ -162,43 +168,50 @@ void Fan_Air_Set(u8 airflow)
     {
         if(airflow < 0x06) airflow = 0x06; 
     }
-
+    if((airflow==0x06 || airflow==0x05 || airflow==0x03) && flag_power_off == 1) Fan_Open();
     switch(airflow)
     {
         case 0x06:
             fan_pwm_set = D_PWM_LOW;
             Fan_Pwm(fan_pwm_set);
             if(flag_power_12V == 0) led_fan(fan_pwm_set);
+            flag_power_off = 0;
             break;
         
         case 0x05:
             fan_pwm_set = D_PWM_MID;
-            if(time_poweron_step > 10000) Fan_Pwm(D_PWM_LOW);
-            else Fan_Pwm(fan_pwm_set);
+            //if(time_poweron_step > 10000) Fan_Pwm(D_PWM_LOW);
+            //else 
+            Fan_Pwm(fan_pwm_set);
             led_fan(fan_pwm_set);
+            flag_power_off = 0;
             break;
     
         case 0x03:
             fan_pwm_set = D_PWM_MAX;
-            if(time_poweron_step > 10000) Fan_Pwm(D_PWM_LOW);
-            else if(time_poweron_step > 0) Fan_Pwm(D_PWM_MID);
-            else Fan_Pwm(fan_pwm_set); 
+            //if(time_poweron_step > 10000) Fan_Pwm(D_PWM_LOW);
+            //else if(time_poweron_step > 0) Fan_Pwm(D_PWM_MID);
+            //else 
+            Fan_Pwm(fan_pwm_set); 
             led_fan(fan_pwm_set);
+            flag_power_off = 0;
             break;
         
-        default:
+        case 0x07:
+            flag_power_off = 1;
             fan_pwm_set = D_PWM_LOW;
-            first_water_pump = 0;
-            flag_water_tank = 0;
+            //first_water_pump = 0;
+            //flag_water_tank = 0;
+            flag_pump = 0;
             SWITCH_PUMP(OFF);
             SWITCH_SOLEN(OFF);
             LED_FAN_LOW(OFF);
             LED_FAN_MID(OFF);
             LED_FAN_MAX(OFF);
             Fan_Off();
-            POWER_ON(OFF);
-            flag_power_12V = 0;
-            flag_power_9V = 0;
+            //POWER_ON(OFF);
+            //flag_power_12V = 0;
+            //flag_power_9V = 0;
             break;
     }
 }
