@@ -374,13 +374,13 @@ void pump_wait_off(void)
 u8 water_level_ms = 0;
 void water_floater_detec(void)
 {
-    if(WATER_LEVEL_DETEC == 0 && flag_level == 1)
+    if(WATER_LEVEL_DETEC == 1 && flag_level == 1)
     {
         water_level_ms++;
         if(water_level_ms > 50)
         {
             water_level_ms = 0;
-            if(WATER_LEVEL_DETEC == 0)
+            if(WATER_LEVEL_DETEC == 1)
             {
                 flag_level = 0;
             }
@@ -388,13 +388,13 @@ void water_floater_detec(void)
     }
     else
     {
-        if(WATER_LEVEL_DETEC == 1 && flag_level == 0)
+        if(WATER_LEVEL_DETEC == 0 && flag_level == 0)
         {
             water_level_ms++;
             if(water_level_ms > 50)
             {
                 water_level_ms = 0;
-                if(WATER_LEVEL_DETEC == 1)
+                if(WATER_LEVEL_DETEC == 0)
                 {
                     flag_level = 1;
                 }

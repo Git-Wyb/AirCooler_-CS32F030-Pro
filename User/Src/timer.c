@@ -62,7 +62,10 @@ void TIM6_IRQHandler(void)
         if(time_300ms >= 300)
         {
             time_300ms = 0;
-            if(flag_power_off == 1) time_power_off--;
+            if(flag_power_off == 1)
+            {
+                if(time_power_off)  time_power_off--;
+            }
             else time_power_off = 100;
             
             if(flag_hydropenia == 1)
