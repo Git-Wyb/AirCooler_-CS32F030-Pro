@@ -117,9 +117,10 @@ void sw2_input_detec(void)
                         LED_FAN_MID(OFF);
                         LED_FAN_MAX(OFF);
                     }
-                    if(sw2_cnt >= 500) //5s
+                    if(sw2_cnt >= 200) //2s
                     {
                         sw2_cnt = 0;
+                        flag_swfan_change = 0;
                         Sw2LastInput_Stu.low_input = Sw2Input_Stu.low_input;
                         Sw2LastInput_Stu.mid_input = Sw2Input_Stu.mid_input;
                         Sw2LastInput_Stu.max_input = Sw2Input_Stu.max_input;
@@ -129,6 +130,7 @@ void sw2_input_detec(void)
                 else
                 {
                     sw2_cnt = 0;
+                    flag_swfan_change = 1;
                     Sw2LastInput_Stu.low_input = Sw2Input_Stu.low_input;
                     Sw2LastInput_Stu.mid_input = Sw2Input_Stu.mid_input;
                     Sw2LastInput_Stu.max_input = Sw2Input_Stu.max_input;
@@ -142,6 +144,7 @@ void sw2_input_detec(void)
             if((Sw2LastInput_Stu.sw2_input & 0x07) == (Sw2Input_Stu.sw2_input & 0x07))
             {
                 sw2_num++;
+                flag_swfan_change = 0;
                 if(sw2_num >= 50)
                 {
                     sw2_num = 0;
@@ -176,32 +179,105 @@ void Fan_Air_Set(u8 airflow)
             Fan_Pwm(fan_pwm_set);
             if(flag_power_12V == 0) led_fan(fan_pwm_set);
             flag_power_off = 0;
+            /*The water tanks and water troughs are all running low on water. 
+            If the switches are changed, the pumping process will start anew.*/
+            if(flag_swfan_change == 1)
+            {
+                flag_swfan_change = 0;
+                if(flag_compout_water == 1) 
+                {
+                    poweron_pump_cnt = 0;
+                    worker_step = 1;
+                    flag_hydropenia = 0;
+                    flag_compout_water = 0;
+                    first_water_pump = 0;
+                    flag_water_tank = 0;
+                    time_pump_water_again = 0;
+                    flag_switch_pump = 1;
+                    time_wait = 500;
+                }
+                /*It's just that the water tank is empty. When the switch is changed, it only pumps water for 5 seconds.*/
+                else if(flag_hydropenia == 1)
+                {
+                    flag_hydropenia = 0;
+                    worker_step = 1;
+                    flag_switch_pump = 1;
+                    time_pump_water_again = 0;
+                    flag_water_tank = 0;
+                    time_wait = 500;
+                }
+            }
             break;
         
         case 0x05:
             fan_pwm_set = D_PWM_MID;
-            //if(time_poweron_step > 10000) Fan_Pwm(D_PWM_LOW);
-            //else 
             Fan_Pwm(fan_pwm_set);
             led_fan(fan_pwm_set);
             flag_power_off = 0;
+            if(flag_swfan_change == 1)
+            {
+                flag_swfan_change = 0;
+                if(flag_compout_water == 1) 
+                {
+                    poweron_pump_cnt = 0;
+                    worker_step = 1;
+                    flag_hydropenia = 0;
+                    flag_compout_water = 0;
+                    first_water_pump = 0;
+                    flag_water_tank = 0;
+                    time_pump_water_again = 0;
+                    flag_switch_pump = 1;
+                    time_wait = 500;
+                }
+                /*It's just that the water tank is empty. When the switch is changed, it only pumps water for 5 seconds.*/
+                else if(flag_hydropenia == 1)
+                {
+                    flag_hydropenia = 0;
+                    worker_step = 1;
+                    flag_switch_pump = 1;
+                    time_pump_water_again = 0;
+                    flag_water_tank = 0;
+                    time_wait = 500;
+                }
+            }
             break;
     
         case 0x03:
             fan_pwm_set = D_PWM_MAX;
-            //if(time_poweron_step > 10000) Fan_Pwm(D_PWM_LOW);
-            //else if(time_poweron_step > 0) Fan_Pwm(D_PWM_MID);
-            //else 
             Fan_Pwm(fan_pwm_set); 
             led_fan(fan_pwm_set);
             flag_power_off = 0;
+            if(flag_swfan_change == 1)
+            {
+                flag_swfan_change = 0;
+                if(flag_compout_water == 1) 
+                {
+                    poweron_pump_cnt = 0;
+                    worker_step = 1;
+                    flag_hydropenia = 0;
+                    flag_compout_water = 0;
+                    first_water_pump = 0;
+                    flag_water_tank = 0;
+                    time_pump_water_again = 0;
+                    flag_switch_pump = 1;
+                    time_wait = 500;
+                }
+                /*It's just that the water tank is empty. When the switch is changed, it only pumps water for 5 seconds.*/
+                else if(flag_hydropenia == 1)
+                {
+                    flag_hydropenia = 0;
+                    worker_step = 1;
+                    flag_switch_pump = 1;
+                    time_pump_water_again = 0;
+                    flag_water_tank = 0;
+                    time_wait = 500;
+                }
+            }
             break;
         
         case 0x07:
             flag_power_off = 1;
             fan_pwm_set = D_PWM_LOW;
-            //first_water_pump = 0;
-            //flag_water_tank = 0;
             flag_pump = 0;
             SWITCH_PUMP(OFF);
             SWITCH_SOLEN(OFF);
@@ -209,9 +285,13 @@ void Fan_Air_Set(u8 airflow)
             LED_FAN_MID(OFF);
             LED_FAN_MAX(OFF);
             Fan_Off();
-            //POWER_ON(OFF);
-            //flag_power_12V = 0;
-            //flag_power_9V = 0;
+            if(flag_compout_swoff) 
+            {
+                flag_compout_swoff = 0;
+                flag_hydropenia = 0;
+                flag_compout_water = 0;
+                time_power_off = 0; //Completely without water, cut off power supply, and do not wait for 15 seconds.
+            }
             break;
     }
 }

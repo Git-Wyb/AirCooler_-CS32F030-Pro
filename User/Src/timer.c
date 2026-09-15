@@ -11,7 +11,7 @@ u16 t_cycle2 = 0;
 u8 capture_flag = 0;
 u16 time_300ms = 0;
 u32 fan_rpm = 0;
-u8 si = 0,sk = 0;
+u8 si = 0,sk = 0,sz = 0;
 
 void Init_Timer6(void)
 {
@@ -52,7 +52,6 @@ void TIM6_IRQHandler(void)
         if(flag_power_off == 0)
         {
             if(time_pump_water_again) time_pump_water_again--;
-            if(time_poweron_step) time_poweron_step--;
             if(time_wait) time_wait--;
             if(time_pump) time_pump--;
         }
@@ -66,7 +65,7 @@ void TIM6_IRQHandler(void)
             {
                 if(time_power_off)  time_power_off--;
             }
-            else time_power_off = 100;
+            else time_power_off = TIME_POWER_OFF; //15s
             
             if(flag_hydropenia == 1)
             {
@@ -89,6 +88,28 @@ void TIM6_IRQHandler(void)
                 }
                 si = 0;
             }
+            if(flag_hydropenia == 0 && Error_Stu.err_floater == 1)
+            {
+                sz++;
+                if(sz == 2) 
+                {
+                    LED_WATER(ON);
+                }
+                else if(sz == 4)
+                {
+                    sz = 0;
+                    LED_WATER(OFF);
+                }
+            }
+            else 
+            {
+                if(sz == 2)
+                {                   
+                    LED_WATER(OFF);
+                }
+                sz = 0;
+            }
+            
             
             if(Error_Stu.err_cover != 0)
             {

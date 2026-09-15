@@ -9,6 +9,7 @@ u8 fan_speed_set = 0;
 BaseFlagStu Un_Flag0 = {0};
 BaseFlagStu Un_Flag1 = {0};
 BaseFlagStu Un_Flag2 = {0};
+BaseFlagStu Un_Flag3 = {0};
 ERR_STU Error_Stu = {0};
 BaseValueStu Adc_Val = {0};
 BaseValueStu CalVal = {0};
@@ -32,8 +33,8 @@ u8 worker_step = 0;
 u8 first_water_pump = 0;
 u32 time_pump_water_again = 0;
 u32 time_pump_water_again_last = 0;
-u32 time_poweron_step = 0;
-u16 time_power_off = 0;
+u16 time_power_off = TIME_POWER_OFF;
+u8 poweron_pump_cnt = 0;
 
 void Init_system_clock(void)
 {

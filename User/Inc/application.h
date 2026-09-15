@@ -7,7 +7,7 @@
 #define POWER_IN_20V     1700//1900 //AD 1828
 #define POWER_IN_15V     1590//18V
 #define POWER_IN_12V     1000//11.0V
-#define POWER_IN_9V       760//8.5V
+#define POWER_IN_9V       700//8.5V
 
 /*
 不工作：0mv
@@ -21,7 +21,7 @@
 #define WATER_PUMP_HALF_TYPE    200
 #define WATER_PUMP_COMP_TYPE    210   
 
-#define TIME_MINUTE             5 //10分钟
+#define TIME_MINUTE             5 //5分钟
 #define TIME_PUMP_WATER_AGAIN   (60 * 1000 * TIME_MINUTE) //interval time
 #define TIME_FIRST_PUMP_WATER   (1000 * 5) //5s,The first pumping operation after power-on 
 #define TIME_PUMP_WATER         (1000 * 5) //5s,Interval pumping

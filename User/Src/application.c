@@ -44,19 +44,17 @@ void get_adc_value_deal(void)
         if(CalVal.Sol_Value >= SOL_VALUE_TYPE-30)   Solenoid_state = 1;
         else Solenoid_state = 0;
         
-        if(CalVal.Water_Pump <= WATER_PUMP_IDLE_TYPE) //80
+        if(CalVal.Water_Pump <= WATER_PUMP_IDLE_TYPE) //60
         {
             water_pump_state = 1;
         }
-        else if(WATER_PUMP_IDLE_TYPE < CalVal.Water_Pump && CalVal.Water_Pump <= WATER_PUMP_NORMAL_TYPE) //80-150
+        else if(WATER_PUMP_IDLE_TYPE < CalVal.Water_Pump && CalVal.Water_Pump <= WATER_PUMP_NORMAL_TYPE) //60-150
         {
             water_pump_state = 2;
-            flag_hydropenia = 0;
         }
         else if(WATER_PUMP_NORMAL_TYPE < CalVal.Water_Pump && CalVal.Water_Pump <= WATER_PUMP_HALF_TYPE) //150-200
         {
             water_pump_state = 3;
-            flag_hydropenia = 0;
         }
         else if(WATER_PUMP_HALF_TYPE < CalVal.Water_Pump)  //>200
         {
@@ -97,7 +95,6 @@ void AirCooler_Worke(void)
 u32 nexttime = 0;
 u8 pump_idle_cnt = 0;
 u8 pump_comp_cnt = 0;
-u8 poweron_pump_cnt = 0;
 void water_pump_worker(void)
 {
     if(flag_fan_sw)
@@ -124,15 +121,15 @@ void water_pump_worker(void)
                     {
                         if(flag_level == 0) time_pump = TIME_FIRST_PUMP_WATER; //5s
                         else time_pump = (1000 * 5); //s
-                        //time_poweron_step = time_pump + (1000 * 15);
                     }
                     else if(flag_pump_last == 1) time_pump = time_pump_last;
                     else time_pump = TIME_PUMP_WATER; //5s
                     if(poweron_pump_cnt < 6) poweron_pump_cnt++;
                     
                     first_water_pump = 1;
-                    if(flag_level == 0) //Draw water from the tank
+                    if((flag_level == 0 && flag_hydropenia == 0) || flag_switch_pump == 1) //No water shortage alarm,Draw water from the tank
                     {
+                        flag_switch_pump = 0;
                         if(PowerIN_state == 2) 
                         {
                             flag_power_9V = 1;
@@ -197,7 +194,7 @@ void water_pump_worker(void)
                                 }
                                 break;
                                 
-                            case 4: //Ë®±Ã¶ÂËÀ
+                            case 4: //Pump clogged//Ë®±Ã¶ÂËÀ
                                 pump_idle_cnt = 0;
                                 pump_comp_cnt++;
                                 if(pump_comp_cnt >= 10)
@@ -273,14 +270,16 @@ void water_pump_worker(void)
                                     flag_water_tank = 0;
                                     SWITCH_SOLEN(OFF); 
                                     flag_hydropenia = 1; //È±Ë®
-                                    time_pump_water_again = TIME_PUMP_WATER_AGAIN;
-                                    worker_step = 0;
+
                                     flag_power_12V = 0;
                                     if(flag_power_9V == 1)
                                     {
                                         flag_power_9V = 0;
                                         Fan_Open();
                                     }
+                                    worker_step = 5;
+                                    time_wait = 500;
+                                    return;
                                 }
                                 break;
                             case 4: //Ë®±Ã¶ÂËÀ
@@ -334,7 +333,104 @@ void water_pump_worker(void)
                     }
                 }
                 break;
-                 
+            
+            case 5: //The water tank is empty.draw water again from the sink.
+                if(time_wait == 0)
+                {
+                    SWITCH_PUMP(ON);
+                    time_pump = TIME_PUMP_WATER;
+                    flag_water_tank = 0;
+                    flag_pump = 1;
+                    flag_adc_pump = 0;
+                    pump_comp_cnt = 0;
+                    pump_idle_cnt = 0;
+                    worker_step = 6;
+                    time_wait = 500;
+                    if(poweron_pump_cnt < 6) poweron_pump_cnt++;
+                }
+                break;
+                
+            case 6: 
+                if(time_wait == 0)
+                {
+                    time_wait = 500;
+                    if(flag_adc_pump == 1 && flag_pump == 1)
+                    {
+                        flag_adc_pump = 0;
+                        switch(water_pump_state)
+                        {
+                            case 1: //Ë®±Ã³é¿Õ
+                                pump_comp_cnt = 0;
+                                pump_idle_cnt++;
+                                if(pump_idle_cnt >= 6) //3s
+                                {
+                                    if(flag_level == 0) Error_Stu.err_floater = 0;
+                                    else Error_Stu.err_floater = 1;
+                                    pump_idle_cnt = 0;
+                                    SWITCH_PUMP(OFF);
+                                    flag_pump = 0;
+                                    flag_water_tank = 0;
+                                    time_pump = 0;//
+                                    flag_compout_water = 1; //Completely out of water,No more pumping water
+                                    flag_compout_swoff = 1;
+                                    worker_step = 8;
+                                    return;
+                                }
+                                break;
+                                
+                            case 4: //Ë®±Ã¶ÂËÀ
+                                pump_idle_cnt = 0;
+                                pump_comp_cnt++;
+                                if(pump_comp_cnt >= 10)
+                                {
+                                    pump_comp_cnt = 0;
+                                    SWITCH_PUMP(OFF);
+                                    SWITCH_SOLEN(OFF);
+                                    time_pump = 0;
+                                    flag_pump = 0;
+                                    flag_water_tank = 0;
+                                    Error_Stu.err_pump_abnormal = 1;
+                                    time_pump_water_again = 0;
+                                    first_water_pump = 0;
+                                    worker_step = 0;
+                                }
+                                break;
+                                
+                            default:
+                                pump_idle_cnt = 0;
+                                pump_comp_cnt = 0;
+                                break;
+                        }
+                    }
+                }
+                if(time_pump == 0)
+                {
+                    SWITCH_PUMP(OFF);
+                    SWITCH_SOLEN(OFF);
+                    flag_pump = 0;
+                    flag_water_tank = 0;
+                    time_wait = 0;
+                    time_pump = 0;
+                    worker_step = 7;
+                    time_wait = 500;
+                    if(first_water_pump)
+                    {
+                        if(poweron_pump_cnt < 6) time_pump_water_again = (1000 * 15); //15s
+                        else time_pump_water_again = TIME_PUMP_WATER_AGAIN;
+                    }
+                }
+                break;
+                
+            case 7:
+                if(first_water_pump == 1 && time_pump_water_again == 0)
+                {
+                    worker_step = 5;
+                }
+                break;
+            
+            case 8:
+                break;
+            
             default:
                 break;
         }

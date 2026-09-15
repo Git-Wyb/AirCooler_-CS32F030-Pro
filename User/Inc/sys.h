@@ -73,6 +73,7 @@ typedef union{
 extern BaseFlagStu Un_Flag0;
 extern BaseFlagStu Un_Flag1;
 extern BaseFlagStu Un_Flag2;
+extern BaseFlagStu Un_Flag3;
 extern ERR_STU Error_Stu;
     
 #define key_power_sta           Un_Flag0.Bit.b0
@@ -82,6 +83,7 @@ extern ERR_STU Error_Stu;
 #define flag_rx_done            Un_Flag0.Bit.b4
 #define flag_fan_worker         Un_Flag0.Bit.b5
 #define flag_adc_pump           Un_Flag0.Bit.b6
+#define flag_switch_pump        Un_Flag0.Bit.b7 //When the switch is changed, start the water pump
 
 #define flag_fan_sw             Un_Flag1.Bit.b0
 #define flag_power_24v          Un_Flag1.Bit.b1
@@ -99,6 +101,12 @@ extern ERR_STU Error_Stu;
 #define flag_power_9V           Un_Flag2.Bit.b4
 #define flag_power_12V          Un_Flag2.Bit.b5
 #define flag_power_off          Un_Flag2.Bit.b6
+#define flag_compout_water      Un_Flag2.Bit.b7//1 Completely out of water
+
+#define flag_compout_swoff      Un_Flag3.Bit.b0
+#define flag_swfan_change       Un_Flag3.Bit.b1
+
+#define TIME_POWER_OFF 50 //50*300ms=15s
 
 extern u16 fan_pwm_set;
 extern u8 fan_speed_set;
@@ -123,8 +131,8 @@ extern u8 worker_step;
 extern u8 first_water_pump;
 extern u32 time_pump_water_again;
 extern u32 time_pump_water_again_last;
-extern u32 time_poweron_step;
 extern u16 time_power_off;
+extern u8 poweron_pump_cnt;
 
 void Init_FWDT(void);
 void FWDT_Clear(void);
