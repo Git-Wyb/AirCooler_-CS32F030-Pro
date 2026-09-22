@@ -35,6 +35,7 @@ u32 time_pump_water_again = 0;
 u32 time_pump_water_again_last = 0;
 u16 time_power_off = TIME_POWER_OFF;
 u8 poweron_pump_cnt = 0;
+u16 time_test_buzzer = 0;
 
 void Init_system_clock(void)
 {

@@ -32,7 +32,7 @@ int main(void)
     Init_Gpio();
     Init_Timer6();
     Init_Uart1();
-    Init_Timer3();
+    //Init_Timer3();
     Init_ADC1();
     time_ms = 500;
     while(Power_supply_detection()) FWDT_Clear();
@@ -58,6 +58,17 @@ int main(void)
             POWER_ON(OFF);
         }
         Send_Logo();
+        if(flag_test_buzzer && time_test_buzzer == 0)
+        {
+            time_test_buzzer = 500;
+            setvol++;
+            if(setvol == 1) buzzer_open();
+            else if(setvol == 2)
+            {
+                setvol = 0;
+                buzzer_off();
+            }
+        }
     }
 }
 
@@ -66,7 +77,7 @@ void Send_Logo(void)
     if(flag_rx_done == 1)
     {
         flag_rx_done = 0;
-        printf("\r\n2026.09.15,Soft Version V0.11\r\n");
+        printf("\r\n2026.09.22,test buzzer on\r\n");
         printf("Fan RPM = %d\r\n",fan_rpm);
         printf("ADC Cover_Value    = %d(mV)\r\n",CalVal.Cover_Value);
         printf("ADC Water Pump     = %d(mV)\r\n",CalVal.Water_Pump);

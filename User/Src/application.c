@@ -373,6 +373,7 @@ void water_pump_worker(void)
                                     time_pump = 0;//
                                     flag_compout_water = 1; //Completely out of water,No more pumping water
                                     flag_compout_swoff = 1;
+                                    flag_test_buzzer = 1;
                                     worker_step = 8;
                                     return;
                                 }
