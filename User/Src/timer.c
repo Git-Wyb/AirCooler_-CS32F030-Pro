@@ -45,7 +45,7 @@ void TIM6_IRQHandler(void)
     if(__TIM_FLAG_STATUS_GET(TIM6,UPDATE) != RESET)
     {
         __TIM_FLAG_CLEAR(TIM6,TIM_FLAG_UPDATE);
-        
+        if(time_test_buzzer) time_test_buzzer--;
         if(time_ms) time_ms--;
         if(time_run)  time_run--;
         if(ms_cnt)  ms_cnt--;
@@ -313,4 +313,51 @@ void TIM3_IRQHandler(void)
 void Init_Timer15(void)
 {
     
+}
+
+//buzzer -> PB5 PWM TIM3_CH2
+void Init_Timer3_TEST_BEEP(void)
+{
+    tim_base_t timer_config_struct;
+    tim_choc_t timer_compare_struct;
+
+    __RCU_APB1_CLK_ENABLE(RCU_APB1_PERI_TIM3); // TIM1 clock enable  (PCLK=16MHZ)
+    
+    gpio_mf_config(GPIOB, GPIO_PIN_5, GPIO_MF_SEL1);
+    gpio_mode_set(GPIOB, GPIO_PIN_5, GPIO_MODE_MF_PP_PU(GPIO_SPEED_HIGH));
+    
+    // Time Base configuration
+    timer_config_struct.period = 8000;  //clk=16MHz/pwm_f_2KHz = 8000
+    timer_config_struct.predivider = 0;
+    timer_config_struct.count_mode = TIM_COUNT_PATTERN_UP;
+    timer_config_struct.clk_division = 0;
+    timer_config_struct.repeate_count = 0;
+    tim_base_init(TIM3, &timer_config_struct);
+    
+    // Channel 4 Configuration in PWM mode.
+    timer_compare_struct.mode = TIM_CHxOCMSEL_PWM2;
+    timer_compare_struct.output_state = TIM_CHx_OUTPUT_ENABLE;
+    timer_compare_struct.output_state_n = TIM_CHxNCCEN_ENABLE;
+    timer_compare_struct.polarity = TIM_CHxCCP_POLARITY_LOW;
+    timer_compare_struct.polarity_n = TIM_CHxNCCP_POLARITY_HIGH;
+    timer_compare_struct.idle_state = TIM_IVOx_SET;
+    timer_compare_struct.idle_state_n = TIM_IVOx_RESET;
+    
+    timer_compare_struct.channel = TIM_CHANNEL_2;
+    timer_compare_struct.pulse = 4000; //50%
+    tim_choc_init(TIM3, &timer_compare_struct);
+}
+
+void buzzer_open(void)
+{
+    Init_Timer3_TEST_BEEP();
+    __TIM_ENABLE(TIM3);                 // TIM1 counter enable
+    __TIM_FUNC_ENABLE(TIM3, CH_OUTPUT); // TIM1 PWM Output Enable.
+}
+
+void buzzer_off(void)
+{
+    __TIM_FUNC_DISABLE(TIM3, CH_OUTPUT);
+    __TIM_DISABLE(TIM3);
+    gpio_mode_set(GPIOB, GPIO_PIN_5, GPIO_MODE_OUT_PP(GPIO_SPEED_HIGH));
 }

@@ -105,6 +105,7 @@ extern ERR_STU Error_Stu;
 
 #define flag_compout_swoff      Un_Flag3.Bit.b0
 #define flag_swfan_change       Un_Flag3.Bit.b1
+#define flag_test_buzzer        Un_Flag3.Bit.b2
 
 #define TIME_POWER_OFF 50 //50*300ms=15s
 
@@ -133,6 +134,7 @@ extern u32 time_pump_water_again;
 extern u32 time_pump_water_again_last;
 extern u16 time_power_off;
 extern u8 poweron_pump_cnt;
+extern u16 time_test_buzzer;
 
 void Init_FWDT(void);
 void FWDT_Clear(void);

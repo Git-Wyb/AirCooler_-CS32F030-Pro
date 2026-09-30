@@ -158,7 +158,7 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>flag_fan_sw</ItemText>
+          <ItemText>CalVal,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>1</count>

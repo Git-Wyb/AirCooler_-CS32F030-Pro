@@ -124,13 +124,13 @@ void water_pump_worker(void)
                     }
                     else if(flag_pump_last == 1) time_pump = time_pump_last;
                     else time_pump = TIME_PUMP_WATER; //5s
-                    if(poweron_pump_cnt < 6) poweron_pump_cnt++;
+                    if(poweron_pump_cnt < POWERON_PUMP_NUM) poweron_pump_cnt++;
                     
                     first_water_pump = 1;
                     if((flag_level == 0 && flag_hydropenia == 0) || flag_switch_pump == 1) //No water shortage alarm,Draw water from the tank
                     {
                         flag_switch_pump = 0;
-                        if(PowerIN_state == 2) 
+                        /*if(PowerIN_state == 2) 
                         {
                             flag_power_9V = 1;
                             Fan_Disbale();     
@@ -140,7 +140,7 @@ void water_pump_worker(void)
                             flag_power_12V = 1;
                             fan_pwm_set = D_PWM_LOW;
                             Fan_Pwm(fan_pwm_set);
-                        }
+                        }*/
                         SWITCH_SOLEN(ON);
                         worker_step = 3;
                     }
@@ -177,7 +177,7 @@ void water_pump_worker(void)
                                     flag_pump = 0;
                                     flag_water_tank = 0;
                                     time_pump = time_pump + 4500; //Add 4.5 seconds,pump idle time
-                                    if(PowerIN_state == 2) 
+                                    /*if(PowerIN_state == 2) 
                                     {
                                         flag_power_9V = 1;
                                         Fan_Disbale();     
@@ -187,7 +187,7 @@ void water_pump_worker(void)
                                         flag_power_12V = 1;
                                         fan_pwm_set = D_PWM_LOW;
                                         Fan_Pwm(fan_pwm_set);
-                                    }
+                                    }*/
                                     SWITCH_SOLEN(ON); //Next,open the solenoid valve to draw water from the tank.
                                     worker_step = 3;
                                     time_wait = 500;
@@ -230,7 +230,7 @@ void water_pump_worker(void)
                     worker_step = 0;
                     if(first_water_pump)
                     {
-                        if(poweron_pump_cnt < 6) time_pump_water_again = (1000 * 15); //15s
+                        if(poweron_pump_cnt < POWERON_PUMP_NUM) time_pump_water_again = (1000 * 15); //15s
                         else time_pump_water_again = TIME_PUMP_WATER_AGAIN;
                     }
                 }
@@ -270,13 +270,13 @@ void water_pump_worker(void)
                                     flag_water_tank = 0;
                                     SWITCH_SOLEN(OFF); 
                                     flag_hydropenia = 1; //ȱˮ
-
+                                    /*
                                     flag_power_12V = 0;
                                     if(flag_power_9V == 1)
                                     {
                                         flag_power_9V = 0;
                                         Fan_Open();
-                                    }
+                                    }*/
                                     worker_step = 5;
                                     time_wait = 500;
                                     return;
@@ -296,12 +296,12 @@ void water_pump_worker(void)
                                     time_pump_water_again = 0;
                                     first_water_pump = 0;
                                 }
-                                flag_power_12V = 0;
+                                /*flag_power_12V = 0;
                                 if(flag_power_9V == 1) 
                                 {
                                     flag_power_9V = 0;
                                     Fan_Open();
-                                }
+                                }*/
                                 break;
                                 
                             default:
@@ -320,17 +320,18 @@ void water_pump_worker(void)
                     time_wait = 0;
                     SWITCH_SOLEN(OFF);
                     worker_step = 0;
-                    flag_power_12V = 0;
+                    
                     if(first_water_pump)
                     {
-                        if(poweron_pump_cnt < 6) time_pump_water_again = (1000 * 15); //15s
+                        if(poweron_pump_cnt < POWERON_PUMP_NUM) time_pump_water_again = (1000 * 15); //15s
                         else time_pump_water_again = TIME_PUMP_WATER_AGAIN;
                     }
+                    /*flag_power_12V = 0;
                     if(flag_power_9V == 1) 
                     {
                         flag_power_9V = 0;
                         Fan_Open();
-                    }
+                    }*/
                 }
                 break;
             
@@ -346,7 +347,7 @@ void water_pump_worker(void)
                     pump_idle_cnt = 0;
                     worker_step = 6;
                     time_wait = 500;
-                    if(poweron_pump_cnt < 6) poweron_pump_cnt++;
+                    if(poweron_pump_cnt < POWERON_PUMP_NUM) poweron_pump_cnt++;
                 }
                 break;
                 
@@ -373,6 +374,7 @@ void water_pump_worker(void)
                                     time_pump = 0;//
                                     flag_compout_water = 1; //Completely out of water,No more pumping water
                                     flag_compout_swoff = 1;
+                                    flag_test_buzzer = 1;
                                     worker_step = 8;
                                     return;
                                 }
@@ -415,7 +417,7 @@ void water_pump_worker(void)
                     time_wait = 500;
                     if(first_water_pump)
                     {
-                        if(poweron_pump_cnt < 6) time_pump_water_again = (1000 * 15); //15s
+                        if(poweron_pump_cnt < POWERON_PUMP_NUM) time_pump_water_again = (1000 * 15); //15s
                         else time_pump_water_again = TIME_PUMP_WATER_AGAIN;
                     }
                 }

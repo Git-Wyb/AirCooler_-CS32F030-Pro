@@ -6,8 +6,8 @@
 #define Power_24V_TYPE   1925//2100 //AD 2187
 #define POWER_IN_20V     1700//1900 //AD 1828
 #define POWER_IN_15V     1590//18V
-#define POWER_IN_12V     1000//11.0V
-#define POWER_IN_9V       700//8.5V
+#define POWER_IN_12V     950//11.0V
+#define POWER_IN_9V       700//8.0V
 
 /*
 ²»¹¤×÷£º0mv
@@ -26,6 +26,8 @@
 #define TIME_FIRST_PUMP_WATER   (1000 * 5) //5s,The first pumping operation after power-on 
 #define TIME_PUMP_WATER         (1000 * 5) //5s,Interval pumping
 #define TIME_WAIT_AGAIN         (60 * 1000 * 5)//5 minute,Once again, draw water from the water tank
+
+#define POWERON_PUMP_NUM  12
 
 typedef enum
 {

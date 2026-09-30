@@ -20,6 +20,9 @@ void Fan_Pwm(u16 pwm);
 void Init_Timer3(void);
 void wait_ms(u16 ms);
 void Fan_Disbale(void);
+void Init_Timer3_TEST_BEEP(void);
+void buzzer_open(void);
+void buzzer_off(void);
 
 #endif
 
