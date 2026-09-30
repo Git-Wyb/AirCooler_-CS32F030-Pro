@@ -77,7 +77,7 @@ void Send_Logo(void)
     if(flag_rx_done == 1)
     {
         flag_rx_done = 0;
-        printf("\r\n2026.09.29,test buzzer on\r\n");
+        printf("\r\n2026.09.30,V0.13 buzzer on\r\n");
         printf("Fan RPM = %d\r\n",fan_rpm);
         printf("ADC Cover_Value    = %d(mV)\r\n",CalVal.Cover_Value);
         printf("ADC Water Pump     = %d(mV)\r\n",CalVal.Water_Pump);

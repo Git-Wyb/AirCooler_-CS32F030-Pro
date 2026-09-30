@@ -27,7 +27,7 @@
 #define TIME_PUMP_WATER         (1000 * 5) //5s,Interval pumping
 #define TIME_WAIT_AGAIN         (60 * 1000 * 5)//5 minute,Once again, draw water from the water tank
 
-#define POWERON_PUMP_NUM  12
+#define POWERON_PUMP_NUM  18
 
 typedef enum
 {
